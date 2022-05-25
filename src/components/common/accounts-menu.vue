@@ -16,10 +16,16 @@ export default {
   name: 'AccountsMenu',
   components: { AccountIcon },
   props: {
+    /**
+     * Accounts address
+     */
     accounts: {
       type: Array,
       default: () => []
     },
+    /**
+     * Object with selected account info
+     */
     selectedAccount: {
       type: Object,
       default: () => {}
@@ -33,6 +39,9 @@ export default {
       return account.address === this.selectedAccount.address
     },
     selectAccount (account) {
+      /**
+       * Emit data when an account is selected
+       */
       this.$emit('selectAccount', account)
     }
   }

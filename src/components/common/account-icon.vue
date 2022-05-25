@@ -7,6 +7,9 @@ import { polkadotIcon } from '@polkadot/ui-shared'
 export default {
   name: 'AccountIcon',
   props: {
+    /**
+     * Polkadot user address
+     */
     address: {
       type: String,
       default: undefined

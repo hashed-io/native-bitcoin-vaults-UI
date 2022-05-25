@@ -18,6 +18,9 @@ export default {
   name: 'SelectedAccountBtn',
   components: { AccountIcon },
   props: {
+    /**
+     * Selected Account Info
+     */
     selectedAccount: {
       type: Object,
       default: () => {}

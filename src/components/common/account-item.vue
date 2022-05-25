@@ -13,6 +13,9 @@ export default {
   name: 'AccountItem',
   components: { AccountIcon },
   props: {
+    /**
+     * Polkadot user address
+     */
     address: {
       type: String,
       default: undefined
