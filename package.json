@@ -1,8 +1,8 @@
 {
-  "name": "hashed-template-quasar-vue3",
+  "name": "native_bitcoin_vault_hashed_client",
   "version": "0.0.1",
   "description": "This is a template developed by HASHED",
-  "productName": "Hashed Template",
+  "productName": "Native Bitcoin Vault",
   "author": "Jose Maria <josemgo.9.11@gmail.com",
   "private": true,
   "scripts": {
