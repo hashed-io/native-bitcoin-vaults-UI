@@ -20,6 +20,13 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
         .text-body2 {{ $t('general.lorem')  }}
     .row.items-center.q-col-gutter-md.q-my-sm
       .col-7
+        account-input(
+          label="Account Input"
+          v-model="accountTest"
+          outlined
+        )
+    .row.items-center.q-col-gutter-md.q-my-sm
+      .col-7
         q-select(
           outlined
           label="Cosigners"
@@ -53,8 +60,10 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
 
 <script>
 import { validation } from '~/mixins/validation'
+import AccountInput from '~/components/common/account-input'
 export default {
   name: 'CreateProposalForm',
+  components: { AccountInput },
   mixins: [validation],
   props: {
     signer: {
@@ -67,7 +76,8 @@ export default {
     return {
       description: undefined,
       threshold: undefined,
-      cosigners: []
+      cosigners: [],
+      accountTest: 'test'
     }
   },
   methods: {
