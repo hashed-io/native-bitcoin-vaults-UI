@@ -23,6 +23,20 @@
       )
   .text-subtitle2.q-mt-md VaultId
   .text-body2 {{ vaultId }}
+  .text-subtitle2.q-mt-md Receive Address
+  q-card.q-pa-xs
+    q-item
+      q-item-section.no-padding(v-if="vaultAddress")
+        .text-body2 {{ vaultAddress }}
+      q-item-section.no-padding(avatar)
+        q-btn(
+          :label="!vaultAddress ? 'Get receive address' : 'Refresh receive address'"
+          size="sm"
+          no-caps
+          dense
+          color="secondary"
+          @click="getReceiveAddress"
+        )
   .text-subtitle2.q-mt-md Owner
   account-item(:address="owner")
   .text-subtitle2.q-mt-md Cosigners
@@ -77,7 +91,8 @@ export default {
       cosigners: undefined,
       isShowingCreateProposal: false,
       isShowingVaultQR: false,
-      vaultQR: undefined
+      vaultQR: undefined,
+      vaultAddress: undefined
     }
   },
   computed: {
@@ -149,6 +164,27 @@ export default {
           this.vaultQR = result
         }
         this.isShowingVaultQR = true
+      } catch (e) {
+        console.error('error', e)
+        this.showNotification({ message: e.message || e, color: 'negative' })
+      } finally {
+        this.hideLoading()
+      }
+    },
+    async getReceiveAddress () {
+      try {
+        this.showLoading()
+        // console.log('vaultQR', process.env.BDK_SERVICES_URL, BDK_SERVICES_URL)
+        const http = axios.create({
+          baseURL: process.env.BDK_SERVICES_URL,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        const { data } = await http.post('/gen_new_address', {
+          descriptor: this.outputDescriptor
+        })
+        this.vaultAddress = data
       } catch (e) {
         console.error('error', e)
         this.showNotification({ message: e.message || e, color: 'negative' })

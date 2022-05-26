@@ -14,7 +14,7 @@ const Template = (args) => ({
     return { ...args }
   },
   // Then, the spread values can be accessed directly in the template
-  template: '<selectedAccountBtn/>'
+  template: '<div class="row"><div class="col-3"><selectedAccountBtn/></div></div>'
 })
 
 export const Base = Template.bind({})
