@@ -32,5 +32,8 @@ Base.args = {
         name: 'Test Account 2'
       }
     }
-  ]
+  ],
+  selectedAccount: {
+    address: '5HGZfBpqUUqGY7uRCYA6aRwnRHJVhrikn8to31GcfNcifkym'
+  }
 }

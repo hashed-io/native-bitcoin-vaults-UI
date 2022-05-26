@@ -9,6 +9,10 @@ q-card(:flat="flat")
 <script>
 import AccountIcon from '~/components/common/account-icon.vue'
 import { mapGetters } from 'vuex'
+
+/**
+ * Component used to show user info (using polkadot address)
+ */
 export default {
   name: 'AccountItem',
   components: { AccountIcon },

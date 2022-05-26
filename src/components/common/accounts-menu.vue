@@ -12,6 +12,9 @@ q-menu(fit auto-close)
 
 <script>
 import AccountIcon from '~/components/common/account-icon.vue'
+/**
+ * Component used to show menu of available accounts
+ */
 export default {
   name: 'AccountsMenu',
   components: { AccountIcon },
