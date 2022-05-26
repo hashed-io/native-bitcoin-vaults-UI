@@ -23,8 +23,8 @@
       )
   .text-subtitle2.q-mt-md VaultId
   .text-body2 {{ vaultId }}
-  .text-subtitle2.q-mt-md Receive Address
-  q-card.q-pa-xs
+  .text-subtitle2.q-mt-md(v-if="outputDescriptor") Receive Address
+  q-card.q-pa-xs(v-if="outputDescriptor")
     q-item
       q-item-section.no-padding(v-if="vaultAddress")
         .text-body2 {{ vaultAddress }}

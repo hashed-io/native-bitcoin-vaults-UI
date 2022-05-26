@@ -18,28 +18,37 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
         )
       .col
         .text-body2 {{ $t('general.lorem')  }}
-    .row.items-center.q-col-gutter-md.q-my-sm
-      .col-7
-        account-input(
-          label="Account Input"
-          v-model="accountTest"
-          outlined
-        )
-    .row.items-center.q-col-gutter-md.q-my-sm
-      .col-7
-        q-select(
-          outlined
-          label="Cosigners"
-          v-model="cosigners"
-          use-input
-          use-chips
-          multiple
-          hide-dropdown-icon
-          @new-value="addCosigner"
-          :rules="[rules.required, rules.containAtLeastCosigners(2), rules.containLessThanCosigners(7)]"
-        )
-      .col
-        .text-body2 {{ $t('general.loremShort')  }}
+    #cosigners
+      .row
+        .col-7
+          .row.justify-between.q-mr-sm.q-mb-sm
+            .text-subtitle2 Cosigners
+            q-btn(
+              icon="add"
+              size="sm"
+              color="secondary"
+              label="Add"
+              @click="addNewCosigner"
+            )
+      .row.items-center.q-col-gutter-md.q-mb-sm
+        .col-7
+          .row.items-center(v-for="cosigner in cosigners")
+            .col
+              account-input(
+                label="Account Input"
+                v-model="cosigner.address"
+                outlined
+                :rules="[rules.required, rules.isValidPolkadotAddress]"
+              )
+            q-icon.icon-btn.q-mb-md(
+              size="md"
+              name="delete"
+              color="negative"
+              @click="removeCosigner(cosigner.id)"
+              v-if="cosigners.length > 1"
+            )
+        .col
+          .text-body2 {{ $t('general.loremShort')  }}
     .row.items-center.q-col-gutter-md.q-my-sm
       .col-7
         q-input(
@@ -76,8 +85,10 @@ export default {
     return {
       description: undefined,
       threshold: undefined,
-      cosigners: [],
-      accountTest: 'test'
+      cosigners: [{
+        id: 0,
+        address: undefined
+      }]
     }
   },
   methods: {
@@ -86,28 +97,22 @@ export default {
         const data = {
           description: this.description,
           threshold: this.threshold,
-          cosigners: this.cosigners
+          cosigners: this.cosigners.map(v => v.address)
         }
         this.$emit('submittedForm', data)
       } catch (e) {
         console.error('submitProposal', e)
       }
     },
-    addCosigner (val, done) {
-      console.log('addCosigner', val)
-      if (this.signer === val) {
-        this.showNotification({
-          message: 'You cannot add your own account as a cosigner',
-          color: 'negative'
-        })
-      } else if (this.$store.$polkadotApi.isValidPolkadotAddress(val)) {
-        done(val, 'add-unique')
-      } else {
-        this.showNotification({
-          message: 'This is not a valid POLKADOT address',
-          color: 'negative'
-        })
-      }
+    addNewCosigner () {
+      this.cosigners.push({
+        id: this.cosigners.length,
+        address: undefined
+      })
+    },
+    removeCosigner (cosignerId) {
+      const index = this.cosigners.findIndex(e => e.id === cosignerId)
+      this.cosigners.splice(index, 1)
     }
   }
 }

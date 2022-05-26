@@ -4,10 +4,10 @@
         :label="label"
         v-model="value"
         :outlined="outlined"
-        :rules="[isValidPolkadotAddress]"
+        :rules="rules"
     )
         template(v-slot:prepend)
-            account-icon(:address="value" size="40px")
+            account-icon.q-mt-sm(:address="value" size="40px")
         template(v-slot:label v-if="displayName && displayName.length < 30")
           #container
             span {{ label }}
@@ -33,6 +33,10 @@ export default {
     outlined: {
       type: Boolean,
       default: true
+    },
+    rules: {
+      type: Array,
+      default: () => []
     }
   },
   emits: ['update:modelValue'],
