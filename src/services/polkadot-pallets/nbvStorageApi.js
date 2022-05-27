@@ -63,9 +63,9 @@ class NbvStorageApi extends BasePolkadotApi {
    * @param {String} user user address
    * @returns undefined
    */
-  async createVault ({ threshold, description, cosigners, user }) {
+  async createVault ({ threshold, description, cosigners, includeOwnerAsCosigner, user }) {
     // Call Extrinsic
-    return this.callTx('createVault', user, [threshold, description, cosigners])
+    return this.callTx('createVault', user, [threshold, description, includeOwnerAsCosigner, cosigners])
   }
 
   /**

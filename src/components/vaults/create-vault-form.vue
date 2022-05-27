@@ -38,7 +38,7 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
                 label="Account address"
                 v-model="cosigner.address"
                 outlined
-                :rules="[rules.required, rules.isValidPolkadotAddress]"
+                :rules="[rules.required, rules.isValidPolkadotAddress, rules.notOwnAccount(signer), notDuplicatedAccounts]"
               )
             q-icon.icon-btn.q-mb-md(
               size="md"
@@ -59,6 +59,8 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
         )
       .col
         .text-body2 {{ $t('general.loremShort')  }}
+    .q-col-gutter-md.q-my-sm
+      q-toggle(label="Include owner as cosigner" v-model="includeOwnerAsCosigner")
     q-btn.float-right.q-mb-md(
         label="Create Vault"
         color="primary"
@@ -85,6 +87,7 @@ export default {
     return {
       description: undefined,
       threshold: undefined,
+      includeOwnerAsCosigner: false,
       cosigners: [{
         id: 0,
         address: undefined
@@ -97,7 +100,8 @@ export default {
         const data = {
           description: this.description,
           threshold: this.threshold,
-          cosigners: this.cosigners.map(v => v.address)
+          cosigners: this.cosigners.map(v => v.address),
+          includeOwnerAsCosigner: this.includeOwnerAsCosigner
         }
         this.$emit('submittedForm', data)
       } catch (e) {
@@ -113,6 +117,12 @@ export default {
     removeCosigner (cosignerId) {
       const index = this.cosigners.findIndex(e => e.id === cosignerId)
       this.cosigners.splice(index, 1)
+    },
+    notDuplicatedAccounts (account) {
+      const exist = this.cosigners.filter(e => e.address === account)
+      if (exist && exist.length > 1) {
+        return 'This account is duplicated'
+      } return true
     }
   }
 }
