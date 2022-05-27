@@ -23,6 +23,11 @@
       )
   .text-subtitle2.q-mt-md VaultId
   .text-body2 {{ vaultId }}
+  .text-subtitle2.q-mt-md Owner
+  account-item(:address="owner")
+  .text-subtitle2.q-mt-md Cosigners
+  .q-gutter-sm(v-for="cosigner in cosigners")
+    account-item.q-mt-md(:address="cosigner")
   .text-subtitle2.q-mt-md(v-if="outputDescriptor") Receive Address
   q-card.q-pa-xs(v-if="outputDescriptor")
     q-item
@@ -37,11 +42,6 @@
           color="secondary"
           @click="getReceiveAddress"
         )
-  .text-subtitle2.q-mt-md Owner
-  account-item(:address="owner")
-  .text-subtitle2.q-mt-md Cosigners
-  .q-gutter-sm(v-for="cosigner in cosigners")
-    account-item.q-mt-md(:address="cosigner")
   .row
     .col
       .text-subtitle2.q-mt-md Description

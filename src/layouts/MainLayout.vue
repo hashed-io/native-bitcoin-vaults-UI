@@ -13,7 +13,7 @@ q-layout(view="lHh Lpr lFf")
             :class="{ 'activeRouter': isActive('Vaults')}"
             dense
           )
-            q-item-section
+            q-item-section.q-pa-sm
               q-item-label Vaults
           q-item.routerItems(
             clickable
@@ -22,7 +22,7 @@ q-layout(view="lHh Lpr lFf")
             :class="{ 'activeRouter': isActive('XPUB')}"
             dense
           )
-            q-item-section
+            q-item-section.q-pa-sm
               q-item-label XPUB
         //- q-toolbar-title.q-ml-md Hashed Template App
         //- div Quasar v{{ $q.version }}

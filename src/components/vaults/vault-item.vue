@@ -17,9 +17,8 @@ q-card.q-pa-sm
     q-item-section(avatar)
       q-btn(
         label="See details"
-        icon="summarize"
         no-caps
-        size="sm"
+        size="md"
         color="secondary"
         @click="goToVaultDetails"
       )

@@ -10,6 +10,14 @@
       outline
       @click="isShowingCreateVault = true"
     )
+    q-btn(
+      label="Sign and verify message"
+      color="warning"
+      icon="message"
+      no-caps
+      outline
+      @click="signAndVerifyMessage"
+    )
   vault-list.q-my-md(:vaults="vaultList")
   #modals
     q-dialog(v-model="isShowingCreateVault")
@@ -79,6 +87,24 @@ export default {
         this.isShowingCreateVault = false
         this.showNotification({ message: 'Vault created' })
         await this.getVaults()
+      } catch (e) {
+        console.error('error', e)
+        this.showNotification({ message: e.message || e, color: 'negative' })
+      } finally {
+        this.hideLoading()
+      }
+    },
+    async signAndVerifyMessage () {
+      try {
+        this.showLoading()
+        const message = 'Test To Sign'
+        const response = await this.$store.$nbvStorageApi.signMessage(message, this.selectedAccount.address)
+        console.log('signMessage', response)
+        const response2 = await this.$store.$nbvStorageApi.verifyMessage(message, response.signature, this.selectedAccount.address)
+        console.log('verifyMessage', response2)
+        if (response2.isValid) {
+          this.showNotification({ message: 'Message Signed and Verified' })
+        }
       } catch (e) {
         console.error('error', e)
         this.showNotification({ message: e.message || e, color: 'negative' })

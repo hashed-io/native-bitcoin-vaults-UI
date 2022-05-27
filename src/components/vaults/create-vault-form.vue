@@ -35,7 +35,7 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
           .row.items-center(v-for="cosigner in cosigners")
             .col
               account-input(
-                label="Account Input"
+                label="Account address"
                 v-model="cosigner.address"
                 outlined
                 :rules="[rules.required, rules.isValidPolkadotAddress]"
