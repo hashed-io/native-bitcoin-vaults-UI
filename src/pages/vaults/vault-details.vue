@@ -23,6 +23,13 @@
       )
   .text-subtitle2.q-mt-md VaultId
   .text-body2 {{ vaultId }}
+  .row
+    .col
+      .text-subtitle2.q-mt-md Description
+      .text-body2 {{ description }}
+    .col
+      .text-subtitle2.q-mt-md Threshold
+      .text-body2 {{ threshold }}
   .text-subtitle2.q-mt-md Owner
   account-item(:address="owner")
   .text-subtitle2.q-mt-md Cosigners
@@ -38,19 +45,9 @@
           :label="!vaultAddress ? 'Get receive address' : 'Refresh receive address'"
           size="sm"
           no-caps
-          dense
           color="secondary"
           @click="getReceiveAddress"
         )
-  .row
-    .col
-      .text-subtitle2.q-mt-md Description
-      .text-body2 {{ description }}
-    .col
-      .text-subtitle2.q-mt-md Threshold
-      .text-body2 {{ threshold }}
-  //- .text-subtitle2.q-mt-md Descriptors
-  //- .text-body2 {{ outputDescriptor }}
   .text-subtitle2.q-mt-md Proposals
   #proposals
     q-btn(
@@ -92,7 +89,8 @@ export default {
       isShowingCreateProposal: false,
       isShowingVaultQR: false,
       vaultQR: undefined,
-      vaultAddress: undefined
+      vaultAddress: undefined,
+      proposalsList: []
     }
   },
   computed: {
@@ -111,7 +109,7 @@ export default {
   mounted () {
     // console.log('vaultDetails', this.$router, this.$route)
     const vault = this.$route.params
-    if (!vault || !vault.owner) this.$router.replace({ name: 'manageVaults' })
+    if (!vault || !vault.owner || !vault.vaultId) this.$router.replace({ name: 'manageVaults' })
     // console.log('vault', vault)
     this.loadDetails(vault)
     // this.$route.meta.breadcrumb[1].name = 'Detailsss'
@@ -125,6 +123,9 @@ export default {
       this.cosigners = vault?.cosigners
       this.outputDescriptor = vault?.outputDescriptor
       this.changeDescriptor = vault?.changeDescriptor
+      if (this.vaultId) {
+        this.getProposals()
+      }
     },
     async removeVault () {
       try {
@@ -199,9 +200,33 @@ export default {
           vaultId: this.vaultId,
           signer: this.selectedAccount.address,
           recipientAddress: payload.recipientAddress,
-          satoshiAmount: payload.amountInSats
+          satoshiAmount: payload.amountInSats,
+          description: payload.description
         })
         this.isShowingCreateProposal = false
+        this.showNotification({ message: 'Proposal created' })
+        this.getProposals()
+      } catch (e) {
+        console.error('error', e)
+        this.showNotification({ message: e.message || e, color: 'negative' })
+      } finally {
+        this.hideLoading()
+      }
+    },
+    async getProposals () {
+      try {
+        this.showLoading()
+        const proposalsIds = await this.$store.$nbvStorageApi.getProposalsByVault({ vaultId: this.vaultId })
+        if (!proposalsIds.isEmpty) {
+          const Ids = proposalsIds.toJSON()
+          const proposals = await this.$store.$nbvStorageApi.getProposalsById({ Ids })
+          this.proposalsList = proposals.map((v, i) => {
+            return {
+              ...v.toHuman(),
+              proposalId: Ids[i]
+            }
+          })
+        } else this.proposalsList = []
       } catch (e) {
         console.error('error', e)
         this.showNotification({ message: e.message || e, color: 'negative' })
