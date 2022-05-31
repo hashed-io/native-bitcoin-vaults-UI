@@ -1,6 +1,6 @@
 export default function () {
   return {
-    availableAccounts: undefined,
+    availableAccounts: [],
     selectedAccount: undefined
   }
 }

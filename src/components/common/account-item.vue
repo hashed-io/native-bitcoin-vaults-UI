@@ -40,7 +40,6 @@ export default {
       if (this.accountInfo) {
         const identity = this.accountInfo?.identity
         const localDisplay = this.availableAccounts.find(v => v.address === this.address)
-        // console.log('localDisplay', localDisplay)
         return (identity.display) ? identity.display : localDisplay?.meta?.name || this.address
       } return undefined
     }
@@ -51,7 +50,9 @@ export default {
     }
   },
   beforeMount () {
-    if (this.address) this.getAccountInfo()
+    if (this.address) {
+      this.getAccountInfo()
+    }
   },
   methods: {
     async getAccountInfo () {

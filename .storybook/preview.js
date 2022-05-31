@@ -8,8 +8,51 @@ import '@quasar/extras/animate/fadeOutRight.css'
 import 'quasar/dist/quasar.css'
 import { app } from '@storybook/vue3'
 import { Quasar } from 'quasar'
+import Vuex from 'vuex'
+import VueI18n from 'vue-i18n'
+// import myStore from '../src/store'
+// import messages from '../src/i18n'
+import { createStore } from 'vuex'
+import polkadotWallet from '../src/store/polkadotWallet'
+
+const store = createStore({
+  modules: {
+    polkadotWallet
+  },
+})
 
 app.use(Quasar, {})
+app.use(Vuex)
+app.use(VueI18n)
+
+
+
+// const store = new Vuex.Store(myStore)
+app.use(store)
+console.log('store on storybook', store)
+
+// API INSTANCES
+import PolkadotApi from '~/services/polkadotApi.js'
+import { NbvStorageApi } from '~/services/polkadot-pallets'
+const api = new PolkadotApi()
+api.connect().then(() => {
+  const nbvStorageApi = new NbvStorageApi(api)
+  store['$polkadotApi'] = api
+  store['$nbvStorageApi'] = nbvStorageApi
+})
+// const i18n = new VueI18n({
+//   locale: 'en-us',
+//   fallbackLocale: 'en-us',
+//   messages
+// })
+// export const decorators = [
+//   (story) => ({
+//     components: { story },
+//     template: `<div class="bg-green q-pa-md"><story /></div>`,
+//     // i18n,
+//     // store
+//   })
+// ];
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
@@ -18,5 +61,6 @@ export const parameters = {
       color: /(background|color)$/i,
       date: /Date$/,
     },
+    expanded: true
   },
 }
