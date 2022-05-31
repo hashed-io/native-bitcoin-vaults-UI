@@ -72,11 +72,19 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
 <script>
 import { validation } from '~/mixins/validation'
 import AccountInput from '~/components/common/account-input'
+
+/**
+ * Form to create a new vault
+ */
 export default {
   name: 'CreateProposalForm',
   components: { AccountInput },
   mixins: [validation],
   props: {
+    /**
+     * User address to sign
+     * This field is used to some validations
+     */
     signer: {
       type: String,
       default: undefined
@@ -103,6 +111,9 @@ export default {
           cosigners: this.cosigners.map(v => v.address),
           includeOwnerAsCosigner: this.includeOwnerAsCosigner
         }
+        /**
+         * This event return all data from form when is filled correctly
+         */
         this.$emit('submittedForm', data)
       } catch (e) {
         console.error('submitProposal', e)

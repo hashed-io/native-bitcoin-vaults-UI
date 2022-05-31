@@ -48,15 +48,13 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
 
 <script>
 import { validation } from '~/mixins/validation'
+
+/**
+ * Form to create a new proposal
+ */
 export default {
   name: 'CreateProposalForm',
   mixins: [validation],
-  props: {
-    signer: {
-      type: String,
-      default: undefined
-    }
-  },
   emits: ['submittedForm'],
   data () {
     return {
@@ -73,6 +71,9 @@ export default {
           amountInSats: this.amountInSats,
           description: this.description
         }
+        /**
+         * This event return all data from form when is filled correctly
+         */
         this.$emit('submittedForm', data)
       } catch (e) {
         console.error('submitProposal', e)

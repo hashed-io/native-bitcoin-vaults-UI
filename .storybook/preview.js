@@ -9,7 +9,8 @@ import 'quasar/dist/quasar.css'
 import { app } from '@storybook/vue3'
 import { Quasar } from 'quasar'
 import Vuex from 'vuex'
-import VueI18n from 'vue-i18n'
+import { createI18n } from 'vue-i18n'
+import messages from '../src/i18n'
 // import myStore from '../src/store'
 // import messages from '../src/i18n'
 import { createStore } from 'vuex'
@@ -23,7 +24,12 @@ const store = createStore({
 
 app.use(Quasar, {})
 app.use(Vuex)
-app.use(VueI18n)
+
+const i18n = createI18n({
+  locale: 'en-US',
+  messages
+})
+app.use(i18n)
 
 
 

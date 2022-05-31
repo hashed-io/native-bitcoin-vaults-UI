@@ -26,30 +26,52 @@ q-card.q-pa-sm
 
 <script>
 import { AccountItem } from '~/components/common'
+
+/**
+ * This component show vault item info
+ */
 export default {
   name: 'VaultItem',
   components: { AccountItem },
   props: {
+    /**
+     * Vault Id
+     */
     vaultId: {
       type: String,
       default: undefined
     },
+    /**
+     * Array of vault cosigners (address values)
+     */
     cosigners: {
       type: Array,
       default: () => []
     },
+    /**
+     * Vault Description
+     */
     description: {
       type: String,
       default: undefined
     },
+    /**
+     * Vault Descriptor
+     */
     descriptors: {
       type: Object,
       default: () => {}
     },
+    /**
+     * Vault Owner
+     */
     owner: {
       type: String,
       default: undefined
     },
+    /**
+     * Vault Threshold
+     */
     threshold: {
       type: [String, Number],
       default: undefined

@@ -18,22 +18,38 @@
 <script>
 import AccountIcon from '~/components/common/account-icon.vue'
 import { mapGetters } from 'vuex'
+
+/**
+ * This is a custom input to validate and show info for user address
+ */
 export default {
   name: 'AccountInput',
   components: { AccountIcon },
   props: {
+    /**
+     * Input Label
+     */
     label: {
       type: String,
       default: ''
     },
+    /**
+     * Used to update and handler v-model (not use modelValue, instead use v-model)
+     */
     modelValue: {
       type: String,
       default: undefined
     },
+    /**
+     * Outlined prop extended from QInput
+     */
     outlined: {
       type: Boolean,
       default: true
     },
+    /**
+     * Rules prop extended from QInput, to add validations
+     */
     rules: {
       type: Array,
       default: () => []
@@ -52,6 +68,9 @@ export default {
         return this.modelValue
       },
       set (value) {
+        /**
+         * Handler v-model automatically in parent component
+         */
         this.$emit('update:modelValue', value)
       }
     },
