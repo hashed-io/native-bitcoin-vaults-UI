@@ -59,7 +59,7 @@
       @click="isShowingCreateProposal = true"
     )
   .row
-    proposal-item.full-width.q-mt-md(v-for="proposal in proposalsList" v-bind="proposal")
+    proposal-item.full-width.q-mt-md(v-for="proposal in proposalsList" v-bind="proposal" @proposalClicked="goToProposalDetails")
   #modals
     q-dialog(v-model="isShowingCreateProposal" persistent)
       q-card.modalSize
@@ -237,6 +237,10 @@ export default {
       } finally {
         this.hideLoading()
       }
+    },
+    goToProposalDetails (proposal) {
+      console.log('goToProposalDetails', proposal)
+      this.$router.push({ name: 'proposalDetails' })
     }
   }
 }

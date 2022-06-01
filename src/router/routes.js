@@ -49,6 +49,20 @@ const routes = [
           ]
         }
       },
+      // Proposals
+      {
+        path: 'proposal',
+        name: 'proposalDetails',
+        props: true,
+        component: () => import('pages/proposals/details.vue'),
+        meta: {
+          breadcrumb: [
+            { name: 'Vaults', icon: 'storage', to: { name: 'manageVaults' } },
+            { name: 'Details', icon: 'summarize', back: true },
+            { name: 'Proposal', icon: 'history_edu' }
+          ]
+        }
+      },
       {
         path: 'not-accounts',
         name: 'notAccounts',

@@ -28,7 +28,7 @@ q-layout(view="lHh Lpr lFf")
         //- div Quasar v{{ $q.version }}
       q-toolbar(class="bg-white text-primary")
         q-breadcrumbs(active-color="primary" style="font-size: 16px")
-          q-breadcrumbs-el.q-ml-md(v-for="breadcrumb in breadcrumbList" :label="breadcrumb.name" :icon="breadcrumb.icon" :to="breadcrumb.to" :class="{ 'hasLink': !!breadcrumb.to }")
+          q-breadcrumbs-el.q-ml-md(v-for="breadcrumb in breadcrumbList" :label="breadcrumb.name" :icon="breadcrumb.icon" :to="breadcrumb.to" :class="{ 'hasLink': !!breadcrumb.to, 'cursor-pointer': breadcrumb.back }" @click="handlerBreadcrumb(breadcrumb)")
 
     q-page-container
       .row.justify-center
@@ -42,7 +42,7 @@ q-layout(view="lHh Lpr lFf")
 import { defineComponent, ref, computed, onMounted, watchEffect } from 'vue'
 import { useNotifications } from '~/mixins/notifications'
 import { useStore } from 'vuex'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { AccountsMenu, SelectedAccountBtn } from '~/components/common/index.js'
 import NotAccounts from '~/pages/NotAccounts.vue'
 // import { TreasuryApi } from '~/services/polkadot-pallets'
@@ -59,6 +59,7 @@ export default defineComponent({
     const { showNotification, showLoading, hideLoading } = useNotifications()
     const $store = useStore()
     const $route = useRoute()
+    const $router = useRouter()
     const api = $store.$polkadotApi
     const selectedAccount = computed(() => $store.getters['polkadotWallet/selectedAccount'])
     const availableAccounts = computed(() => $store.getters['polkadotWallet/availableAccounts'])
@@ -117,12 +118,19 @@ export default defineComponent({
       return false
     }
 
+    function handlerBreadcrumb (breadcrumb) {
+      if (breadcrumb.back) {
+        $router.back()
+      }
+    }
+
     return {
       availableAccounts,
       onSelectAccount,
       selectedAccount,
       breadcrumbList,
-      isActive
+      isActive,
+      handlerBreadcrumb
     }
   }
 })

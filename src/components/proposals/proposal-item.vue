@@ -1,5 +1,5 @@
 <template lang="pug">
-q-card.q-pa-sm.animated-item
+q-card.q-pa-sm.animated-item(@click="emitClick")
   q-item
     q-item-section.q-gutter-y-xs
       .row.justify-between
@@ -96,6 +96,7 @@ export default {
       default: undefined
     }
   },
+  emits: ['proposalClicked'],
   computed: {
     chipStatus () {
       if (this.status.toLowerCase() === 'pending') {
@@ -113,7 +114,22 @@ export default {
     }
   },
   methods: {
-
+    emitClick () {
+      const data = {
+        vaultId: this.vaultId,
+        proposalId: this.proposalId,
+        toAddress: this.toAddress,
+        status: this.status,
+        description: this.description,
+        amount: this.amount,
+        proposer: this.proposer,
+        feeSatPerVb: this.feeSatPerVb
+      }
+      /**
+       * Emit proposal data when the card is clicked
+       */
+      this.$emit('proposalClicked', data)
+    }
   }
 }
 </script>
