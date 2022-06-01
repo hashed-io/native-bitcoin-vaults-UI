@@ -28,7 +28,7 @@ q-layout(view="lHh Lpr lFf")
         //- div Quasar v{{ $q.version }}
       q-toolbar(class="bg-white text-primary")
         q-breadcrumbs(active-color="primary" style="font-size: 16px")
-          q-breadcrumbs-el.q-ml-md(v-for="breadcrumb in breadcrumbList" :label="breadcrumb.name" :icon="breadcrumb.icon" :to="breadcrumb.to" :class="{ 'hasLink': !!breadcrumb.to, 'cursor-pointer': breadcrumb.back }" @click="handlerBreadcrumb(breadcrumb)")
+          q-breadcrumbs-el.q-ml-md(v-for="(breadcrumb, index) in breadcrumbList" :label="breadcrumb.name" :icon="breadcrumb.icon" :to="breadcrumb.to" :class="{ 'hasLink': !!breadcrumb.to, 'cursor-pointer': breadcrumb.back }" @click="handlerBreadcrumb(index)")
 
     q-page-container
       .row.justify-center
@@ -118,9 +118,13 @@ export default defineComponent({
       return false
     }
 
-    function handlerBreadcrumb (breadcrumb) {
-      if (breadcrumb.back) {
+    function handlerBreadcrumb (index) {
+      // console.log('handlerBreadcrumb', breadcrumb, index)
+      const breadUpdated = $route.meta.breadcrumb[index]
+      if (breadUpdated.back) {
         $router.back()
+      } else if (breadUpdated.to) {
+        $router.push(breadUpdated.to)
       }
     }
 

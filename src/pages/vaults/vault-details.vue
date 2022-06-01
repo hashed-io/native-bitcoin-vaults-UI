@@ -239,8 +239,24 @@ export default {
       }
     },
     goToProposalDetails (proposal) {
-      console.log('goToProposalDetails', proposal)
-      this.$router.push({ name: 'proposalDetails' })
+      const parentParams = {
+        vaultId: this.vaultId,
+        owner: this.owner,
+        description: this.description,
+        threshold: this.threshold,
+        cosigners: this.cosigners,
+        outputDescriptor: this.outputDescriptor,
+        changeDescriptor: this.changeDescriptor
+      }
+      const JsonParams = JSON.stringify(parentParams)
+      const ProposalParams = JSON.stringify(proposal)
+      this.$router.push({
+        name: 'proposalDetails',
+        params: {
+          parentParams: JsonParams,
+          proposalParams: ProposalParams
+        }
+      })
     }
   }
 }
