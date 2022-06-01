@@ -48,8 +48,8 @@
           color="secondary"
           @click="getReceiveAddress"
         )
-  .text-subtitle2.q-mt-md Proposals
-  #proposals
+  #proposals.row.justify-between.items-center.q-mt-lg
+    .text-subtitle2.q-mt-md Proposals
     q-btn(
       label="Create proposal"
       icon="add"
@@ -58,6 +58,8 @@
       outline
       @click="isShowingCreateProposal = true"
     )
+  .row
+    proposal-item.full-width.q-mt-md(v-for="proposal in proposalsList" v-bind="proposal")
   #modals
     q-dialog(v-model="isShowingCreateProposal" persistent)
       q-card.modalSize
@@ -72,11 +74,13 @@
 import { mapGetters } from 'vuex'
 import { AccountItem } from '~/components/common'
 import CreateProposalForm from '~/components/proposals/create-proposal-form'
+import ProposalItem from '~/components/proposals/proposal-item'
 import { Encoder } from '@smontero/nbv-ur-codec'
 import axios from 'axios'
+
 export default {
   name: 'VaultDetails',
-  components: { AccountItem, CreateProposalForm },
+  components: { AccountItem, CreateProposalForm, ProposalItem },
   data () {
     return {
       vaultId: undefined,

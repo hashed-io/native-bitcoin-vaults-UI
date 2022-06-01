@@ -1,5 +1,5 @@
 <template lang="pug">
-q-card(:flat="flat")
+q-card(:flat="flat" :class="{'inherit': inherit}")
   q-item
     q-item-section(avatar)
       account-icon(:address="address" size="2em")
@@ -25,6 +25,10 @@ export default {
       default: undefined
     },
     flat: {
+      type: Boolean,
+      default: false
+    },
+    inherit: {
       type: Boolean,
       default: false
     }
@@ -66,3 +70,8 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+.inherit
+  background-color: inherit
+</style>

@@ -1,7 +1,7 @@
 <template lang="pug">
-q-card.q-pa-sm
+q-card.q-pa-sm(@click="goToVaultDetails")
   q-item
-    q-item-section
+    q-item-section.q-gutter-y-xs
       //- .text-subtitle2 Id:
       //-   span.text-body2.one-line.q-ml-sm {{ vaultId }}
       .row.items-center
@@ -13,15 +13,16 @@ q-card.q-pa-sm
         .text-subtitle2 Threshold:
           span.text-body2.q-ml-sm {{ threshold }}
       .text-subtitle2 Owner
-      account-item(:address="owner" flat)
+      account-item(:address="owner" flat inherit)
     q-item-section(avatar)
-      q-btn(
-        label="See details"
-        no-caps
-        size="md"
-        color="secondary"
-        @click="goToVaultDetails"
-      )
+      .text-subtitle2.text-primary.hoverView Click to see details
+      //- q-btn(
+      //-   label="See details"
+      //-   no-caps
+      //-   size="md"
+      //-   color="secondary"
+      //-   @click="goToVaultDetails"
+      //- )
 </template>
 
 <script>
@@ -96,3 +97,11 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+.hoverView
+  display: none
+
+.animated-item:hover .hoverView
+  display: block
+</style>
