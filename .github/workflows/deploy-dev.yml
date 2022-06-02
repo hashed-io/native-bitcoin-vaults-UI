@@ -38,7 +38,6 @@ jobs:
       # Setup quasar
       - name: Setup Quasar environment
         run: |
-            yarn global add @vue/cli@latest
             yarn global add @quasar/cli
             yarn install
 
