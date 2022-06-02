@@ -63,9 +63,9 @@ class NbvStorageApi extends BasePolkadotApi {
    * @param {String} user user address
    * @returns undefined
    */
-  async createVault ({ threshold, description, cosigners, user }) {
+  async createVault ({ threshold, description, cosigners, includeOwnerAsCosigner, user }) {
     // Call Extrinsic
-    return this.callTx('createVault', user, [threshold, description, cosigners])
+    return this.callTx('createVault', user, [threshold, description, includeOwnerAsCosigner, cosigners])
   }
 
   /**
@@ -110,10 +110,34 @@ class NbvStorageApi extends BasePolkadotApi {
    * @param {String} satoshiAmount Satoshi amount
    * @returns undefined
    */
-  async createProposal ({ vaultId, recipientAddress, satoshiAmount, signer }) {
+  async createProposal ({ vaultId, recipientAddress, satoshiAmount, description, signer }) {
     // Call Extrinsic
-    const params = [vaultId, recipientAddress, satoshiAmount]
+    const params = [vaultId, recipientAddress, satoshiAmount, description]
     return this.callTx('propose', signer, params)
+  }
+
+  /**
+   * @name getProposalsByVault
+   * @description Get all proposals for a vault
+   * @param {String} vaultId Vault Id
+   * @param {Function} subTrigger Function to trigger when subscription detect changes
+   * @returns {Array} array of vaults Id
+   * [{ id }]
+   */
+  getProposalsByVault ({ vaultId, subTrigger }) {
+    return this.exQuery('proposalsByVault', vaultId, subTrigger)
+  }
+
+  /**
+   * @name getProposalsById
+   * @description Get an array of proposals details
+   * @param {String} Ids Array of proposals id
+   * @param {Function} subTrigger Function to trigger when subscription detect changes
+   * @returns {Array} list vaults array
+   * [{ id, description, descriptor, owner, cosigners }]
+   */
+  getProposalsById ({ Ids, subTrigger }) {
+    return this.exMultiQuery('proposals', Ids, subTrigger)
   }
 }
 

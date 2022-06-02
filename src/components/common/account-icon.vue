@@ -4,9 +4,15 @@ div(v-html="svgHtml")
 
 <script>
 import { polkadotIcon } from '@polkadot/ui-shared'
+/**
+ * Component used to get user icon using @polkadot/ui-shared
+ */
 export default {
   name: 'AccountIcon',
   props: {
+    /**
+     * Polkadot user address
+     */
     address: {
       type: String,
       default: undefined

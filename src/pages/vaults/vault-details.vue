@@ -23,11 +23,6 @@
       )
   .text-subtitle2.q-mt-md VaultId
   .text-body2 {{ vaultId }}
-  .text-subtitle2.q-mt-md Owner
-  account-item(:address="owner")
-  .text-subtitle2.q-mt-md Cosigners
-  .q-gutter-sm(v-for="cosigner in cosigners")
-    account-item.q-mt-md(:address="cosigner")
   .row
     .col
       .text-subtitle2.q-mt-md Description
@@ -35,10 +30,26 @@
     .col
       .text-subtitle2.q-mt-md Threshold
       .text-body2 {{ threshold }}
-  //- .text-subtitle2.q-mt-md Descriptors
-  //- .text-body2 {{ outputDescriptor }}
-  .text-subtitle2.q-mt-md Proposals
-  #proposals
+  .text-subtitle2.q-mt-md Owner
+  account-item(:address="owner")
+  .text-subtitle2.q-mt-md Cosigners
+  .q-gutter-sm(v-for="cosigner in cosigners")
+    account-item.q-mt-md(:address="cosigner")
+  .text-subtitle2.q-mt-md(v-if="outputDescriptor") Receive Address
+  q-card.q-pa-xs(v-if="outputDescriptor")
+    q-item
+      q-item-section.no-padding(v-if="vaultAddress")
+        .text-body2 {{ vaultAddress }}
+      q-item-section.no-padding(avatar)
+        q-btn(
+          :label="!vaultAddress ? 'Get receive address' : 'Refresh receive address'"
+          size="sm"
+          no-caps
+          color="secondary"
+          @click="getReceiveAddress"
+        )
+  #proposals.row.justify-between.items-center.q-mt-lg
+    .text-subtitle2.q-mt-md Proposals
     q-btn(
       label="Create proposal"
       icon="add"
@@ -47,25 +58,37 @@
       outline
       @click="isShowingCreateProposal = true"
     )
+  .row
+    proposal-item.full-width.q-mt-md(v-for="proposal in proposalsList" v-bind="proposal" @proposalClicked="goToProposalDetails")
   #modals
     q-dialog(v-model="isShowingCreateProposal" persistent)
       q-card.modalSize
         create-proposal-form(@submittedForm="createNewProposal")
     q-dialog(v-model="isShowingVaultQR")
-      q-card.modalQrSize
+      q-card.modalQrSize.q-pa-sm
         .text-body2.text-weight-light.q-ml-sm.text-center.q-mt-sm Descriptor QR
         div.qrContainer(v-html="vaultQR")
+        q-btn.full-width.q-mx-md(
+          icon="content_copy"
+          label="Copy text to clipboard"
+          flat
+          size="md"
+          no-caps
+          @click="copyTextToClipboard"
+        )
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import { AccountItem } from '~/components/common'
 import CreateProposalForm from '~/components/proposals/create-proposal-form'
+import ProposalItem from '~/components/proposals/proposal-item'
 import { Encoder } from '@smontero/nbv-ur-codec'
 import axios from 'axios'
+
 export default {
   name: 'VaultDetails',
-  components: { AccountItem, CreateProposalForm },
+  components: { AccountItem, CreateProposalForm, ProposalItem },
   data () {
     return {
       vaultId: undefined,
@@ -77,7 +100,10 @@ export default {
       cosigners: undefined,
       isShowingCreateProposal: false,
       isShowingVaultQR: false,
-      vaultQR: undefined
+      vaultQR: undefined,
+      vaultQrText: undefined,
+      vaultAddress: undefined,
+      proposalsList: []
     }
   },
   computed: {
@@ -94,10 +120,8 @@ export default {
     }
   },
   mounted () {
-    // console.log('vaultDetails', this.$router, this.$route)
     const vault = this.$route.params
-    if (!vault || !vault.owner) this.$router.replace({ name: 'manageVaults' })
-    // console.log('vault', vault)
+    if (!vault || !vault.owner || !vault.vaultId) this.$router.replace({ name: 'manageVaults' })
     this.loadDetails(vault)
     // this.$route.meta.breadcrumb[1].name = 'Detailsss'
   },
@@ -110,6 +134,9 @@ export default {
       this.cosigners = vault?.cosigners
       this.outputDescriptor = vault?.outputDescriptor
       this.changeDescriptor = vault?.changeDescriptor
+      if (this.vaultId) {
+        this.getProposals()
+      }
     },
     async removeVault () {
       try {
@@ -144,11 +171,33 @@ export default {
           })
           // console.log('descr', data)
           const encoder = new Encoder()
-          // console.log('data to export', data)
+          const text = encoder.encodeVault(data, this.description)
           const result = encoder.vaultToQRCode(data, this.description)
           this.vaultQR = result
+          this.vaultQrText = text
         }
         this.isShowingVaultQR = true
+      } catch (e) {
+        console.error('error', e)
+        this.showNotification({ message: e.message || e, color: 'negative' })
+      } finally {
+        this.hideLoading()
+      }
+    },
+    async getReceiveAddress () {
+      try {
+        this.showLoading()
+        // console.log('vaultQR', process.env.BDK_SERVICES_URL, BDK_SERVICES_URL)
+        const http = axios.create({
+          baseURL: process.env.BDK_SERVICES_URL,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        const { data } = await http.post('/gen_new_address', {
+          descriptor: this.outputDescriptor
+        })
+        this.vaultAddress = data
       } catch (e) {
         console.error('error', e)
         this.showNotification({ message: e.message || e, color: 'negative' })
@@ -163,14 +212,68 @@ export default {
           vaultId: this.vaultId,
           signer: this.selectedAccount.address,
           recipientAddress: payload.recipientAddress,
-          satoshiAmount: payload.amountInSats
+          satoshiAmount: payload.amountInSats,
+          description: payload.description
         })
         this.isShowingCreateProposal = false
+        this.showNotification({ message: 'Proposal created' })
+        this.getProposals()
       } catch (e) {
         console.error('error', e)
         this.showNotification({ message: e.message || e, color: 'negative' })
       } finally {
         this.hideLoading()
+      }
+    },
+    async getProposals () {
+      try {
+        this.showLoading()
+        const proposalsIds = await this.$store.$nbvStorageApi.getProposalsByVault({ vaultId: this.vaultId })
+        if (!proposalsIds.isEmpty) {
+          const Ids = proposalsIds.toJSON()
+          const proposals = await this.$store.$nbvStorageApi.getProposalsById({ Ids })
+          this.proposalsList = proposals.map((v, i) => {
+            return {
+              ...v.toHuman(),
+              proposalId: Ids[i]
+            }
+          })
+        } else this.proposalsList = []
+      } catch (e) {
+        console.error('error', e)
+        this.showNotification({ message: e.message || e, color: 'negative' })
+      } finally {
+        this.hideLoading()
+      }
+    },
+    goToProposalDetails (proposal) {
+      const parentParams = {
+        vaultId: this.vaultId,
+        owner: this.owner,
+        description: this.description,
+        threshold: this.threshold,
+        cosigners: this.cosigners,
+        outputDescriptor: this.outputDescriptor,
+        changeDescriptor: this.changeDescriptor
+      }
+      const JsonParams = JSON.stringify(parentParams)
+      const ProposalParams = JSON.stringify(proposal)
+      this.$router.push({
+        name: 'proposalDetails',
+        params: {
+          parentParams: JsonParams,
+          proposalParams: ProposalParams
+        }
+      })
+    },
+    copyTextToClipboard () {
+      try {
+        navigator.clipboard.writeText(this.vaultQrText).then(e => {
+          this.showNotification({ message: 'Text copied to clipboard' })
+        })
+      } catch (e) {
+        console.error('error', e)
+        this.showNotification({ message: e.message || e, color: 'negative' })
       }
     }
   }

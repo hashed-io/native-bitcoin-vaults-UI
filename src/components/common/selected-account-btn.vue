@@ -14,10 +14,17 @@
 
 <script>
 import AccountIcon from '~/components/common/account-icon.vue'
+
+/**
+ * Component used to show selected account and trigger available accounts
+ */
 export default {
   name: 'SelectedAccountBtn',
   components: { AccountIcon },
   props: {
+    /**
+     * Selected Account Info
+     */
     selectedAccount: {
       type: Object,
       default: () => {}

@@ -1,6 +1,6 @@
 <template lang="pug">
 #container.q-gutter-sm
-  vault-item(v-for="vault in vaults" v-bind="vault")
+  vault-item.animated-item(v-for="vault in vaults" v-bind="vault")
 </template>
 
 <script>

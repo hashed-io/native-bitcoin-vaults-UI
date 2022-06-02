@@ -22,7 +22,7 @@
       no-caps
       type="submit"
     )
-  #modals
+  #modals(v-if="qr")
     qr-decode-xpub(ref="qrDecodeXpub" @xpubDecoded="onDecode")
 </template>
 
@@ -40,6 +40,10 @@ export default {
     userAddress: {
       type: String,
       default: undefined
+    },
+    qr: {
+      type: Boolean,
+      default: true
     }
   },
   emits: ['submitted'],
@@ -68,7 +72,7 @@ export default {
 }
 </script>
 
-<style lang="sass" scoped>
+<style lang="stylus" scoped>
 .icon-btn:hover
   color: $primary
 </style>

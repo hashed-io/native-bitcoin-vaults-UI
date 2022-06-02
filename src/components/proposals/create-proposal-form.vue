@@ -12,6 +12,16 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
       .col-7
         q-input(
           outlined
+          label="Description"
+          v-model="description"
+          :rules="[rules.required]"
+        )
+      .col
+        .text-body2 {{ $t('general.lorem')  }}
+    .row.items-center.q-col-gutter-md.q-my-sm
+      .col-7
+        q-input(
+          outlined
           label="Recipient address"
           v-model="recipientAddress"
           :rules="[rules.required, rules.isValidMainetBTC]"
@@ -38,20 +48,19 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
 
 <script>
 import { validation } from '~/mixins/validation'
+
+/**
+ * Form to create a new proposal
+ */
 export default {
   name: 'CreateProposalForm',
   mixins: [validation],
-  props: {
-    signer: {
-      type: String,
-      default: undefined
-    }
-  },
   emits: ['submittedForm'],
   data () {
     return {
       recipientAddress: undefined,
-      amountInSats: undefined
+      amountInSats: undefined,
+      description: undefined
     }
   },
   methods: {
@@ -59,8 +68,12 @@ export default {
       try {
         const data = {
           recipientAddress: this.recipientAddress,
-          amountInSats: this.amountInSats
+          amountInSats: this.amountInSats,
+          description: this.description
         }
+        /**
+         * This event return all data from form when is filled correctly
+         */
         this.$emit('submittedForm', data)
       } catch (e) {
         console.error('submitProposal', e)

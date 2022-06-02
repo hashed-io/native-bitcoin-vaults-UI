@@ -19,7 +19,9 @@ export default {
       lessOrEqualThan: 'The value must be less than or equal to {value}',
       containAtLeastCosigners: 'This field must contain at least {value} cosigners address',
       containLessThanCosigners: 'This field must contain at less than {value} cosigners address',
-      isNotValidMainetBTC: 'This field must contain a valid mainet BTC address'
+      isNotValidMainetBTC: 'This field must contain a valid mainet BTC address',
+      isNotValidPolkadotAddress: 'Is not a valid polkadot address',
+      notOwnAccount: 'Not owner account allowed, please set this on "Include owner as cosigner" option'
     }
   }
 }

@@ -1,8 +1,6 @@
 export default function () {
   return {
-    wssURL: undefined,
-    availableAccounts: undefined,
-    selectedAccount: undefined,
-    api: undefined
+    availableAccounts: [],
+    selectedAccount: undefined
   }
 }
