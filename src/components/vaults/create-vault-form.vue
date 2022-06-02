@@ -7,7 +7,7 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
       v-close-popup
       size="sm"
     )
-    .text-h4.q-mb-md Create new vault!
+    .text-h4.q-mb-lg Create new vault
     .row.items-center.q-col-gutter-md.q-my-sm
       .col-7
         q-input(
@@ -66,6 +66,7 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
         color="primary"
         size="md"
         type="submit"
+        no-caps
     )
 </template>
 
