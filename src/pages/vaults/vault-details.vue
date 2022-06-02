@@ -65,9 +65,17 @@
       q-card.modalSize
         create-proposal-form(@submittedForm="createNewProposal")
     q-dialog(v-model="isShowingVaultQR")
-      q-card.modalQrSize
+      q-card.modalQrSize.q-pa-sm
         .text-body2.text-weight-light.q-ml-sm.text-center.q-mt-sm Descriptor QR
         div.qrContainer(v-html="vaultQR")
+        q-btn.full-width.q-mx-md(
+          icon="content_copy"
+          label="Copy text to clipboard"
+          flat
+          size="md"
+          no-caps
+          @click="copyTextToClipboard"
+        )
 </template>
 
 <script>
@@ -93,6 +101,7 @@ export default {
       isShowingCreateProposal: false,
       isShowingVaultQR: false,
       vaultQR: undefined,
+      vaultQrText: undefined,
       vaultAddress: undefined,
       proposalsList: []
     }
@@ -111,10 +120,8 @@ export default {
     }
   },
   mounted () {
-    // console.log('vaultDetails', this.$router, this.$route)
     const vault = this.$route.params
     if (!vault || !vault.owner || !vault.vaultId) this.$router.replace({ name: 'manageVaults' })
-    // console.log('vault', vault)
     this.loadDetails(vault)
     // this.$route.meta.breadcrumb[1].name = 'Detailsss'
   },
@@ -164,9 +171,10 @@ export default {
           })
           // console.log('descr', data)
           const encoder = new Encoder()
-          // console.log('data to export', data)
+          const text = encoder.encodeVault(data, this.description)
           const result = encoder.vaultToQRCode(data, this.description)
           this.vaultQR = result
+          this.vaultQrText = text
         }
         this.isShowingVaultQR = true
       } catch (e) {
@@ -257,6 +265,16 @@ export default {
           proposalParams: ProposalParams
         }
       })
+    },
+    copyTextToClipboard () {
+      try {
+        navigator.clipboard.writeText(this.vaultQrText).then(e => {
+          this.showNotification({ message: 'Text copied to clipboard' })
+        })
+      } catch (e) {
+        console.error('error', e)
+        this.showNotification({ message: e.message || e, color: 'negative' })
+      }
     }
   }
 }
