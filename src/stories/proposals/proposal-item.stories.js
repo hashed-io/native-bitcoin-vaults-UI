@@ -1,20 +1,21 @@
-import ProposalCard from '../../components/proposals/proposal-card.vue'
+// import ProposalItem from '../../components/proposals/proposal-card.vue'
+import ProposalItem from '../../components/proposals/proposal-item.vue'
 
 export default {
-  title: 'Proposals/ProposalCard',
-  component: ProposalCard
+  title: 'Proposals/ProposalItem',
+  component: ProposalItem
 }
 
 const Template = (args) => ({
   // Components used in your story `template` are defined in the `components` object
-  components: { ProposalCard },
+  components: { ProposalItem },
   // The story's `args` need to be mapped into the template through the `setup()` method
   setup () {
     // Story args can be spread into the returned object
     return { ...args }
   },
   // Then, the spread values can be accessed directly in the template
-  template: '<ProposalCard/>'
+  template: '<ProposalItem/>'
 })
 
 export const Base = Template.bind({})

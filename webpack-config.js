@@ -1,6 +1,6 @@
 const path = require('path')
 // const ESLintPlugin = require('eslint-webpack-plugin')
-// const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 
 // const options = {
 //   extensions: ['js', 'vue'],
@@ -29,9 +29,9 @@ module.exports = (cfg) => {
   //   new ESLintPlugin(options)
   // )
 
-  // cfg.plugins.push(
-  //   new NodePolyfillPlugin()
-  // )
+  cfg.plugins.push(
+    new NodePolyfillPlugin()
+  )
 
   cfg.module.rules.push({
     enforce: 'pre',

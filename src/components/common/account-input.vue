@@ -95,7 +95,7 @@ export default {
     isValidPolkadotAddress (v) {
       if (!v) {
         return 'This field is required'
-      } else if (this.$store.$polkadotApi.isValidPolkadotAddress(v)) {
+      } else if (this.$store && this.$store.$polkadotApi && this.$store.$polkadotApi.isValidPolkadotAddress(v)) {
         return true
       }
       return 'Is not a valid polkadot address'
