@@ -66,6 +66,7 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
         color="primary"
         size="md"
         type="submit"
+        no-caps
     )
 </template>
 
