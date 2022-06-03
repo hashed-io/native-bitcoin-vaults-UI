@@ -64,7 +64,7 @@ jobs:
         with:
           project_id: ${{ secrets.PROD_GC_PROJECT_ID }}
           # service_account_key: ${{ secrets.PROD_GC_CREDENTIALS }}
-          export_default_credentials: true
+
       
       #Sync to Bucket
       - name: Copy website to bucket
