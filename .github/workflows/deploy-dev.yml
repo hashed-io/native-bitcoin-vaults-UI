@@ -38,20 +38,20 @@ jobs:
       # Setup quasar
       - name: Setup Quasar environment
         run: |
-            yarn global add @quasar/cli
-            yarn install
+          yarn global add @quasar/cli
+          yarn install
 
       # Build App
       - name: Build app
         run: quasar build
         env:
-            APP_NAME: 'Native Bitcoin Vault'
-            WSS: 'wss://n1.hashed.systems'
-            BDK_SERVICES_URL: 'https://bdk.hashed.systems'            
+          APP_NAME: 'Native Bitcoin Vault'
+          WSS: 'wss://n1.hashed.systems'
+          BDK_SERVICES_URL: 'https://bdk.hashed.systems'            
       
       #Set up Google Cloud SDK
       - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@main
+        uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: ${{ secrets.PROD_GC_PROJECT_ID }}
           service_account_key: ${{ secrets.PROD_GC_CREDENTIALS }}
@@ -61,9 +61,7 @@ jobs:
       - name: Copy website to bucket
         run: gsutil -m rsync -R . gs://${{ secrets.PROD_GC_BUCKET_NAME }}
         working-directory: ./dist/spa
-        env:
-          BUCKET_NAME: ${{ secrets.PROD_GC_BUCKET_NAME }}
+      
+      #Invalidate CDN Cache
       - name: Invalidate CDN cache
-        run: gcloud compute url-maps invalidate-cdn-cache $URL_MAP_NAME --path=/*
-        env:
-          URL_MAP_NAME: ${{ secrets.PROD_GC_URL_MAP }}
+        run: gcloud compute url-maps invalidate-cdn-cache ${{ secrets.PROD_GC_URL_MAP }} --path=/*
