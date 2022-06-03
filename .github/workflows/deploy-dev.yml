@@ -53,17 +53,17 @@ jobs:
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@master
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GOOGLE_CREDENTIALS }}
+          project_id: ${{ secrets.PROD_GC_PROJECT_ID }}
+          service_account_key: ${{ secrets.PROD_GC_CREDENTIALS }}
           export_default_credentials: true
       
       #Sync to Bucket
-      # - name: Copy website to bucket
-      #   run: gsutil -m rsync -R . gs://$BUCKET_NAME
-      #   working-directory: ./dist/spa
-      #   env:
-      #     BUCKET_NAME: ${{secrets[format('WEBSITE_BUCKET_{0}',steps.branch-name.outputs.uppercase)]}}
-      # - name: Invalidate CDN cache
-      #   run: gcloud compute url-maps invalidate-cdn-cache $URL_MAP_NAME --path=/*
-      #   env:
-      #     URL_MAP_NAME: ${{secrets[format('URL_MAP_{0}',steps.branch-name.outputs.uppercase)]}}
+      - name: Copy website to bucket
+        run: gsutil -m rsync -R . gs://$BUCKET_NAME
+        working-directory: ./dist/spa
+        env:
+          BUCKET_NAME: ${ {secrets.PROD_GC_BUCKET_NAME }}
+      - name: Invalidate CDN cache
+        run: gcloud compute url-maps invalidate-cdn-cache $URL_MAP_NAME --path=/*
+        env:
+          URL_MAP_NAME: ${{ secrets.PROD_GC_URL_MAP }}
