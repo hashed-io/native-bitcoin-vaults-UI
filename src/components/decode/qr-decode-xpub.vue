@@ -45,7 +45,8 @@ export default {
       await this.$nextTick()
       if (v) {
         const { state } = await navigator.permissions.query({ name: 'camera' })
-        if (state === 'granted') {
+        console.log('cameraPermissions', state)
+        if (state === 'granted' || state === 'prompt') {
           this.hasCameraPermission = true
         } else this.hasCameraPermission = false
         // console.log('response ref', permissions, this.$refs.qrReader.camera)

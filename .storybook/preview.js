@@ -40,7 +40,7 @@ console.log('store on storybook', store)
 // API INSTANCES
 import PolkadotApi from '~/services/polkadotApi.js'
 import { NbvStorageApi } from '~/services/polkadot-pallets'
-const api = new PolkadotApi()
+const api = new PolkadotApi('wss://n1.hashed.systems')
 api.connect().then(() => {
   const nbvStorageApi = new NbvStorageApi(api)
   store['$polkadotApi'] = api

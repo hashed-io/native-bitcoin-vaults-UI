@@ -99,7 +99,7 @@ export default {
   emits: ['proposalClicked'],
   computed: {
     chipStatus () {
-      if (this.status.toLowerCase() === 'pending') {
+      if (this.status && this.status.toLowerCase() === 'pending') {
         return {
           color: 'warning',
           'text-color': 'white',
