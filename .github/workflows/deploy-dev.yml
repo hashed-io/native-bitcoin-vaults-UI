@@ -44,8 +44,6 @@ jobs:
       # Build App
       - name: Build app
         run: |
-          echo "Just Testing"
-          echo "WSS: $WSS"
           quasar build
         env:
           APP_NAME: 'Native Bitcoin Vault'
@@ -53,24 +51,23 @@ jobs:
           BDK_SERVICES_URL: 'https://bdk.hashed.systems'
 
       #Auth google Could SDK
-      - name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v0'
-        with:
-          credentials_json: '${{ secrets.PROD_GC_CREDENTIALS }}'            
+      # - name: 'Authenticate to Google Cloud'
+      #   uses: 'google-github-actions/auth@v0'
+      #   with:
+      #     credentials_json: '${{ secrets.PROD_GC_CREDENTIALS }}'            
       
       #Set up Google Cloud SDK
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0
-        with:
-          project_id: ${{ secrets.PROD_GC_PROJECT_ID }}
-          # service_account_key: ${{ secrets.PROD_GC_CREDENTIALS }}
+      # - name: Set up Google Cloud SDK
+      #   uses: google-github-actions/setup-gcloud@v0
+      #   with:
+      #     project_id: ${{ secrets.PROD_GC_PROJECT_ID }}
 
       
       #Sync to Bucket
-      - name: Copy website to bucket
-        run: gsutil -m rsync -R . gs://${{ secrets.PROD_GC_BUCKET_NAME }}
-        working-directory: ./dist/spa
+      # - name: Copy website to bucket
+      #   run: gsutil -m rsync -R . gs://${{ secrets.PROD_GC_BUCKET_NAME }}
+      #   working-directory: ./dist/spa
       
       #Invalidate CDN Cache
-      - name: Invalidate CDN cache
-        run: gcloud compute url-maps invalidate-cdn-cache ${{ secrets.PROD_GC_URL_MAP }} --path=/*
+      # - name: Invalidate CDN cache
+      #   run: gcloud compute url-maps invalidate-cdn-cache ${{ secrets.PROD_GC_URL_MAP }} --path=/*
