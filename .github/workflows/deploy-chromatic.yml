@@ -49,4 +49,8 @@ jobs:
         with:
           # 👇 Chromatic projectToken, refer to the manage page to obtain it.
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        env:
+          APP_NAME: 'Native Bitcoin Vault'
+          WSS: 'wss://n1.hashed.systems'
+          BDK_SERVICES_URL: 'https://bdk.hashed.systems'
 
