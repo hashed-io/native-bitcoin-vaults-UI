@@ -59,10 +59,10 @@ jobs:
       
       #Sync to Bucket
       - name: Copy website to bucket
-        run: gsutil -m rsync -R . gs://$BUCKET_NAME
+        run: gsutil -m rsync -R . gs://${{ secrets.PROD_GC_BUCKET_NAME }}
         working-directory: ./dist/spa
         env:
-          BUCKET_NAME: ${ {secrets.PROD_GC_BUCKET_NAME }}
+          BUCKET_NAME: ${{ secrets.PROD_GC_BUCKET_NAME }}
       - name: Invalidate CDN cache
         run: gcloud compute url-maps invalidate-cdn-cache $URL_MAP_NAME --path=/*
         env:
