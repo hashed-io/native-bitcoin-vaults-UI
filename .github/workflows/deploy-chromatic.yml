@@ -42,15 +42,20 @@ jobs:
       - name: Setup environment
         run: |
             yarn install
-
-      # Build App
-      - name: Deploy Chromatic
-        uses: chromaui/action-next@v1
-        with:
-          # 👇 Chromatic projectToken, refer to the manage page to obtain it.
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
         env:
           APP_NAME: 'Native Bitcoin Vault'
           WSS: 'wss://n1.hashed.systems'
           BDK_SERVICES_URL: 'https://bdk.hashed.systems'
+
+      # Build App
+      - name: Deploy Chromatic
+        uses: chromaui/action-next@v1
+        env:
+          APP_NAME: 'Native Bitcoin Vault'
+          WSS: 'wss://n1.hashed.systems'
+          BDK_SERVICES_URL: 'https://bdk.hashed.systems'
+        with:
+          # 👇 Chromatic projectToken, refer to the manage page to obtain it.
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        
 

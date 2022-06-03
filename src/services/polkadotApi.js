@@ -22,6 +22,7 @@ class PolkadotApi {
   async connect () {
     try {
       // Initialize the provider to connect to the local node
+      console.log('connecting to ', this.wss)
       const provider = new WsProvider(this.wss)
 
       // Create the API and wait until ready
