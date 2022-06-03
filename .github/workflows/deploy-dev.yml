@@ -43,7 +43,10 @@ jobs:
 
       # Build App
       - name: Build app
-        run: quasar build
+        run: |
+          echo "Just Testing"
+          echo "WSS: $WSS"
+          quasar build
         env:
           APP_NAME: 'Native Bitcoin Vault'
           WSS: 'wss://n1.hashed.systems'
