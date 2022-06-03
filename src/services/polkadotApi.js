@@ -11,6 +11,7 @@ import { signatureVerify } from '@polkadot/util-crypto'
 class PolkadotApi {
   constructor (wss) {
     this.wss = wss || process.env.WSS
+    console.log('polkadotApi constructor', wss, process.env.WSS)
     this.api = undefined
   }
 
