@@ -11,6 +11,7 @@ import { signatureVerify } from '@polkadot/util-crypto'
 class PolkadotApi {
   constructor (wss) {
     this.wss = wss || process.env.WSS
+    console.log('polkadotApi constructor', wss, process.env.WSS)
     this.api = undefined
   }
 
@@ -22,6 +23,7 @@ class PolkadotApi {
   async connect () {
     try {
       // Initialize the provider to connect to the local node
+      console.log('connecting to ', this.wss)
       const provider = new WsProvider(this.wss)
 
       // Create the API and wait until ready
