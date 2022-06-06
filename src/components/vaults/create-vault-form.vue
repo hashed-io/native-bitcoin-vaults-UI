@@ -121,7 +121,7 @@ export default {
     },
     async cosigners () {
       await this.$nextTick()
-      this.$refs.form.validate()
+      this.$refs.form.resetValidation()
     }
   },
   methods: {
