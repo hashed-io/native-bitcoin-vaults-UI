@@ -115,7 +115,11 @@ export default {
     }
   },
   watch: {
-    async includeOwnerAsCosigner (v) {
+    async includeOwnerAsCosigner () {
+      await this.$nextTick()
+      this.$refs.form.validate()
+    },
+    async cosigners () {
       await this.$nextTick()
       this.$refs.form.validate()
     }
