@@ -1,5 +1,5 @@
 <template lang="pug">
-q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
+q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm" ref="form")
     q-btn.float-right(
       icon="close"
       round
@@ -55,7 +55,7 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
           outlined
           label="Threshold"
           v-model="threshold"
-          :rules="[rules.required, rules.positiveInteger, rules.greaterOrEqualThan(2), rules.lessOrEqualThan(cosigners.length)]"
+          :rules="[rules.required, rules.positiveInteger, rules.greaterOrEqualThan(minCosigners), rules.lessOrEqualThan(maxCosigners)]"
         )
       .col
         .text-body2 {{ $t('general.loremShort')  }}
@@ -101,6 +101,27 @@ export default {
         id: 0,
         address: undefined
       }]
+    }
+  },
+  computed: {
+    minCosigners () {
+      return 2
+    },
+    maxCosigners () {
+      if (this.includeOwnerAsCosigner) {
+        return this.cosigners.length + 1
+      }
+      return this.cosigners.length
+    }
+  },
+  watch: {
+    async includeOwnerAsCosigner () {
+      await this.$nextTick()
+      this.$refs.form.validate()
+    },
+    async cosigners () {
+      await this.$nextTick()
+      this.$refs.form.resetValidation()
     }
   },
   methods: {
