@@ -10,8 +10,9 @@
         no-caps
         outline
         @click="exportVault"
-        v-if="outputDescriptor"
+        :disabled="!outputDescriptor"
       )
+        q-tooltip(v-if="!outputDescriptor") Pending
       q-btn(
         label="Delete vault"
         color="negative"
