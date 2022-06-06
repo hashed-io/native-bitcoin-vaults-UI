@@ -105,7 +105,7 @@ export default {
   },
   computed: {
     minCosigners () {
-      return 2
+      return 1
     },
     maxCosigners () {
       if (this.includeOwnerAsCosigner) {
