@@ -99,8 +99,8 @@ export default {
   emits: ['submitted'],
   data () {
     return {
-      // fullXpub: "[993D5AA8/48'/0'/0'/2']Zpub752e1TJf2Roex9i8Wr4BCVgtoEWtQQeP2bievFbxFyheuNJoUQMXwxuafVercaBhAWXno2wXWAQesVjrDRNHkCL9Jf89Gx4aRKNNCF5Moq2"
-      fullXpub: undefined,
+      fullXpub: "[993D5AA8/48'/0'/0'/2']Zpub752e1TJf2Roex9i8Wr4BCVgtoEWtQQeP2bievFbxFyheuNJoUQMXwxuafVercaBhAWXno2wXWAQesVjrDRNHkCL9Jf89Gx4aRKNNCF5Moq2",
+      // fullXpub: undefined,
       useForm: false,
       publicKey: undefined,
       masterFingerprint: undefined,
@@ -131,5 +131,5 @@ export default {
 
 <style lang="stylus" scoped>
 .icon-btn:hover
-  color: $primary
+  color: primary
 </style>
