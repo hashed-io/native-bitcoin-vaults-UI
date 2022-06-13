@@ -1,7 +1,10 @@
 <template lang="pug">
 #container
-  .text-h5.q-mb-md Manage XPUB
-  .text-body2.text-weight-light.q-mb-lg {{ $t('general.lorem')  }}
+  .row.items-center.q-mb-md
+    .text-h5 Manage Public Keys
+    q-icon.q-ml-sm.icon-btn(name="help" color="primary" size="sm")
+      q-tooltip.text-body2(:offset="[10, 10]") {{ $t('xpub.extendedPublicKeyInfo') }}
+  .text-body2.text-weight-light.q-mb-lg {{ $t('xpub.textInfo')  }}
   q-card(v-if="userHasXpub")
     q-item
       q-item-section
@@ -100,6 +103,7 @@ export default {
     async setXpub (payload) {
       try {
         this.showLoading({ message: this.$t('general.waitingWeb3') })
+        console.log('setXpub', payload)
         await this.$store.$nbvStorageApi.submitXPUB({
           user: this.selectedAccount.address,
           XPUB: payload.XPUB

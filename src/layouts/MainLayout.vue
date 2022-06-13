@@ -23,7 +23,7 @@ q-layout(view="lHh Lpr lFf")
             dense
           )
             q-item-section.q-pa-sm
-              q-item-label XPUB
+              q-item-label Extended Keys
         //- q-toolbar-title.q-ml-md Hashed Template App
         //- div Quasar v{{ $q.version }}
       q-toolbar(class="bg-white text-primary")
