@@ -3,7 +3,8 @@
   .row.items-center.q-mb-md
     .text-h5 Manage Public Keys
     q-icon.q-ml-sm.icon-btn(name="help" color="primary" size="sm")
-      q-tooltip.text-body2(:offset="[10, 10]") {{ $t('xpub.extendedPublicKeyInfo') }}
+      q-tooltip.text-body2.myTooltip(:offset="[10, 10]")
+        .myTooltip {{ $t('xpub.extendedPublicKeyInfo') }}
   .text-body2.text-weight-light.q-mb-lg {{ $t('xpub.textInfo')  }}
   q-card(v-if="userHasXpub")
     q-item
@@ -136,3 +137,9 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+.myTooltip
+  // width: 500px
+  max-width: 600px
+</style>
