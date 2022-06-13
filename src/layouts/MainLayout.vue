@@ -34,7 +34,8 @@ q-layout(view="lHh Lpr lFf")
       .row.justify-center
         .col-10
           .q-px-lg.q-pa-lg
-            not-accounts(v-if="!selectedAccount")
+            not-connected(v-if="!isConnectedToServer")
+            not-accounts(v-else-if="!selectedAccount")
             router-view(v-else)
 </template>
 
@@ -45,6 +46,7 @@ import { useStore } from 'vuex'
 import { useRoute, useRouter } from 'vue-router'
 import { AccountsMenu, SelectedAccountBtn } from '~/components/common/index.js'
 import NotAccounts from '~/pages/NotAccounts.vue'
+import NotConnected from '~/pages/NotConnected.vue'
 // import { TreasuryApi } from '~/services/polkadot-pallets'
 export default defineComponent({
   name: 'MainLayout',
@@ -52,7 +54,8 @@ export default defineComponent({
   components: {
     AccountsMenu,
     SelectedAccountBtn,
-    NotAccounts
+    NotAccounts,
+    NotConnected
   },
 
   setup () {
@@ -63,6 +66,7 @@ export default defineComponent({
     const api = $store.$polkadotApi
     const selectedAccount = computed(() => $store.getters['polkadotWallet/selectedAccount'])
     const availableAccounts = computed(() => $store.getters['polkadotWallet/availableAccounts'])
+    const isConnectedToServer = computed(() => $store.$connectedToServer)
     const accounts = ref(undefined)
     const breadcrumbList = ref(undefined)
     watchEffect(() => updateBreadcrumbs($route))
@@ -134,7 +138,8 @@ export default defineComponent({
       selectedAccount,
       breadcrumbList,
       isActive,
-      handlerBreadcrumb
+      handlerBreadcrumb,
+      isConnectedToServer
     }
   }
 })
