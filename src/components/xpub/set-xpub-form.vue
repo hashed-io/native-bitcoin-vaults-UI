@@ -104,7 +104,7 @@ export default {
       useForm: false,
       publicKey: undefined,
       masterFingerprint: undefined,
-      derivation: undefined,
+      derivation: "m/48'/0'/0'/2'",
       label: undefined
     }
   },

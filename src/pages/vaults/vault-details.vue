@@ -1,5 +1,6 @@
 <template lang="pug">
 #container
+  //- Header
   .row.justify-between.q-mb-md
     .text-h5 Vault Details
     .row.q-gutter-x-sm
@@ -22,7 +23,8 @@
         @click="removeVault"
         v-if="iAmOwner"
       )
-  .text-subtitle2.q-mt-md VaultId
+  //- Body
+  .text-subtitle2.q-mt-md Vault Id
   .text-body2 {{ vaultId }}
   .row
     .col
@@ -49,6 +51,20 @@
           color="secondary"
           @click="getReceiveAddress"
         )
+  .text-subtitle2.q-mt-md(v-if="outputDescriptor") Output Descriptor
+  q-card.q-pa-xs(v-if="outputDescriptor")
+    q-item
+      q-item-section
+        q-item-label.text-body2(lines="1") {{ outputDescriptor }}
+      q-item-section.no-padding(avatar)
+        q-btn(
+          label="Copy to clipboard"
+          size="sm"
+          no-caps
+          color="secondary"
+          @click="copyTextToClipboard(outputDescriptor)"
+        )
+  //- Proposals
   #proposals.row.justify-between.items-center.q-mt-lg
     .text-subtitle2.q-mt-md Proposals
     q-btn(
@@ -59,8 +75,7 @@
       outline
       @click="isShowingCreateProposal = true"
     )
-  .row
-    proposal-item.full-width.q-mt-md(v-for="proposal in proposalsList" v-bind="proposal" @proposalClicked="goToProposalDetails")
+  proposals-list(:proposals="proposalsList" @onProposalSelected="goToProposalDetails")
   #modals
     q-dialog(v-model="isShowingCreateProposal" persistent)
       q-card.modalSize
@@ -75,7 +90,7 @@
           flat
           size="md"
           no-caps
-          @click="copyTextToClipboard"
+          @click="copyTextToClipboard(vaultQrText)"
         )
 </template>
 
@@ -83,13 +98,13 @@
 import { mapGetters } from 'vuex'
 import { AccountItem } from '~/components/common'
 import CreateProposalForm from '~/components/proposals/create-proposal-form'
-import ProposalItem from '~/components/proposals/proposal-item'
+import ProposalsList from '~/components/proposals/proposals-list'
 import { Encoder } from '@smontero/nbv-ur-codec'
 import axios from 'axios'
 
 export default {
   name: 'VaultDetails',
-  components: { AccountItem, CreateProposalForm, ProposalItem },
+  components: { AccountItem, CreateProposalForm, ProposalsList },
   data () {
     return {
       vaultId: undefined,
@@ -267,9 +282,9 @@ export default {
         }
       })
     },
-    copyTextToClipboard () {
+    copyTextToClipboard (data) {
       try {
-        navigator.clipboard.writeText(this.vaultQrText).then(e => {
+        navigator.clipboard.writeText(data).then(e => {
           this.showNotification({ message: 'Text copied to clipboard' })
         })
       } catch (e) {
