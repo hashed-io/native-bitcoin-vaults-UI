@@ -4,29 +4,36 @@
   .row.justify-between.q-mb-md
     .text-h5 Vault Details
     .row.q-gutter-x-sm
-      q-btn(
-        label="Export descriptor"
-        color="secondary"
-        icon="qr_code"
-        no-caps
-        outline
-        @click="exportVault"
-        :disabled="!outputDescriptor"
-      )
+      #exportDescriptor.no-padding.q-ma-none
+        q-btn(
+          label="Export descriptor"
+          color="secondary"
+          icon="qr_code"
+          no-caps
+          outline
+          @click="exportVault"
+          :disabled="!outputDescriptor"
+        )
         q-tooltip(v-if="!outputDescriptor") Pending
-      q-btn(
-        label="Delete vault"
-        color="negative"
-        icon="delete"
-        no-caps
-        outline
-        @click="removeVault"
-        v-if="iAmOwner"
-      )
+      #deleteVault
+        q-btn(
+          label="Delete vault"
+          color="negative"
+          icon="delete"
+          no-caps
+          outline
+          @click="removeVault"
+          v-if="iAmOwner"
+        )
   //- Body
   .text-subtitle2.q-mt-md Vault Id
   .text-body2 {{ vaultId }}
   .row
+    .col
+      .text-subtitle2.q-mt-md Balance
+      .row
+        q-icon.q-mr-md(name="fak fa-satoshisymbol-solid" size="sm" color="secondary")
+        .text-body2 {{ balance || 0 }} Sats
     .col
       .text-subtitle2.q-mt-md Description
       .text-body2 {{ description }}
@@ -65,16 +72,19 @@
           @click="copyTextToClipboard(outputDescriptor)"
         )
   //- Proposals
-  #proposals.row.justify-between.items-center.q-mt-lg
+  #proposals.row.justify-between.items-center.q-mt-lg.q-mb-sm
     .text-subtitle2.q-mt-md Proposals
-    q-btn(
-      label="Create proposal"
-      icon="add"
-      color="secondary"
-      no-caps
-      outline
-      @click="isShowingCreateProposal = true"
-    )
+    #btnCreateProposal
+      q-btn(
+        label="Create proposal"
+        icon="add"
+        color="secondary"
+        no-caps
+        outline
+        @click="isShowingCreateProposal = true"
+        :disabled="!balance || balance <= 0"
+      )
+      q-tooltip(v-if="!balance || balance <= 0") The vault's balance must be greater than 0
   proposals-list(:proposals="proposalsList" @onProposalSelected="goToProposalDetails")
   #modals
     q-dialog(v-model="isShowingCreateProposal" persistent)
@@ -100,7 +110,6 @@ import { AccountItem } from '~/components/common'
 import CreateProposalForm from '~/components/proposals/create-proposal-form'
 import ProposalsList from '~/components/proposals/proposals-list'
 import { Encoder } from '@smontero/nbv-ur-codec'
-import axios from 'axios'
 
 export default {
   name: 'VaultDetails',
@@ -112,6 +121,7 @@ export default {
       description: undefined,
       changeDescriptor: undefined,
       outputDescriptor: undefined,
+      offchainStatus: undefined,
       threshold: undefined,
       cosigners: undefined,
       isShowingCreateProposal: false,
@@ -119,6 +129,7 @@ export default {
       vaultQR: undefined,
       vaultQrText: undefined,
       vaultAddress: undefined,
+      balance: undefined,
       proposalsList: []
     }
   },
@@ -135,8 +146,10 @@ export default {
       })
     }
   },
-  mounted () {
-    const vault = this.$route.params
+  beforeMount () {
+    const params = this.$route.params
+    if (!params || !params.vault) this.$router.replace({ name: 'manageVaults' })
+    const vault = JSON.parse(params.vault)
     if (!vault || !vault.owner || !vault.vaultId) this.$router.replace({ name: 'manageVaults' })
     this.loadDetails(vault)
     // this.$route.meta.breadcrumb[1].name = 'Detailsss'
@@ -150,8 +163,22 @@ export default {
       this.cosigners = vault?.cosigners
       this.outputDescriptor = vault?.outputDescriptor
       this.changeDescriptor = vault?.changeDescriptor
-      if (this.vaultId) {
+      this.offchainStatus = vault?.offchainStatus
+      if (this.vaultId && this.outputDescriptor) {
         this.getProposals()
+        this.getBalance()
+      }
+    },
+    async getBalance () {
+      try {
+        const data = await this.$store.$bdkApi.getBalance({
+          descriptor: this.outputDescriptor,
+          changeDescriptor: this.changeDescriptor
+        })
+        this.balance = data
+      } catch (e) {
+        console.error('error', e)
+        this.showNotification({ message: e.message || e, color: 'negative' })
       }
     },
     async removeVault () {
@@ -175,17 +202,9 @@ export default {
       try {
         this.showLoading()
         if (!this.vaultQR) {
-          // console.log('vaultQR', process.env.BDK_SERVICES_URL, BDK_SERVICES_URL)
-          const http = axios.create({
-            baseURL: process.env.BDK_SERVICES_URL,
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          })
-          const { data } = await http.post('/get_multisig', {
+          const data = await this.$store.$bdkApi.getMultisig({
             descriptor: this.outputDescriptor
           })
-          // console.log('descr', data)
           const encoder = new Encoder()
           const text = encoder.encodeVault(data, this.description)
           const result = encoder.vaultToQRCode(data, this.description)
@@ -203,14 +222,7 @@ export default {
     async getReceiveAddress () {
       try {
         this.showLoading()
-        // console.log('vaultQR', process.env.BDK_SERVICES_URL, BDK_SERVICES_URL)
-        const http = axios.create({
-          baseURL: process.env.BDK_SERVICES_URL,
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-        const { data } = await http.post('/gen_new_address', {
+        const data = await this.$store.$bdkApi.getNewAddress({
           descriptor: this.outputDescriptor
         })
         this.vaultAddress = data
@@ -270,7 +282,8 @@ export default {
         threshold: this.threshold,
         cosigners: this.cosigners,
         outputDescriptor: this.outputDescriptor,
-        changeDescriptor: this.changeDescriptor
+        changeDescriptor: this.changeDescriptor,
+        offchainStatus: this.offchainStatus
       }
       const JsonParams = JSON.stringify(parentParams)
       const ProposalParams = JSON.stringify(proposal)

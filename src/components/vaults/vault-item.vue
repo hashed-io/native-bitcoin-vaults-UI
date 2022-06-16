@@ -76,6 +76,13 @@ export default {
     threshold: {
       type: [String, Number],
       default: undefined
+    },
+    /**
+     * Offchain Statis
+     */
+    offchainStatus: {
+      type: [Object, String],
+      default: () => undefined
     }
   },
   methods: {
@@ -87,11 +94,12 @@ export default {
         outputDescriptor: this.descriptors.outputDescriptor,
         changeDescriptor: this.descriptors.changeDescriptor,
         owner: this.owner,
-        threshold: this.threshold
+        threshold: this.threshold,
+        offchainStatus: this.offchainStatus
       }
       this.$router.push({
         name: 'vaultDetails',
-        params: vault
+        params: { vault: JSON.stringify(vault) }
       })
     }
   }

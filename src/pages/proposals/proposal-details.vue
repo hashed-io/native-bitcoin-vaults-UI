@@ -42,7 +42,7 @@ export default {
   components: { AccountItem },
   data () {
     return {
-      parentParams: undefined,
+      // parentParams: undefined,
       proposal: undefined
     }
   },
@@ -50,6 +50,7 @@ export default {
     const params = this.$route.params
     if (params && params.parentParams) {
       const paramsParent = JSON.parse(params.parentParams)
+      console.log('paramsParent', paramsParent)
       const proposal = JSON.parse(params.proposalParams)
       if (proposal && proposal.vaultId) {
         this.proposal = proposal
@@ -66,7 +67,7 @@ export default {
             back: false,
             to: {
               name: 'vaultDetails',
-              params: paramsParent
+              params: { vault: JSON.stringify(paramsParent) }
             }
           }
         }
