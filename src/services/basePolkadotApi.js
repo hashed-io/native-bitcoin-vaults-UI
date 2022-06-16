@@ -4,9 +4,10 @@ class BasePolkadotApi {
    * @param {PolkadotApi} polkadotApi Instance from PolkadotApi class
    * @param {String} palletName Pallet Name
    */
-  constructor (polkadotApi, palletName) {
+  constructor (polkadotApi, palletName, notify) {
     this.polkadotApi = polkadotApi
     this.palletName = palletName
+    this.notify = notify
   }
 
   /**
@@ -44,7 +45,7 @@ class BasePolkadotApi {
    * @returns Query response or unsubscribe function from polkadot api
    */
   async exQuery (queryName, params, subTrigger) {
-    return this.polkadotApi.api.query[this.palletName][queryName](params, subTrigger)
+    return this.polkadotApi.api.query[this.palletName][queryName](...params, subTrigger)
   }
 
   /**
@@ -60,6 +61,18 @@ class BasePolkadotApi {
   }
 
   /**
+   * @name exEntriesQuery
+   * @description Execute a query or query subscription from polkadot api
+   * @param {String} queryName Query name to execute
+   * @param {Array} params Params for query execution, Params [Array]
+   * @param {*} subTrigger Function handler to query subscription
+   * @returns Query response or unsubscribe function from polkadot api
+   */
+  async exEntriesQuery (queryName, params, subTrigger) {
+    return this.polkadotApi.api.query[this.palletName][queryName].entries(...params)
+  }
+
+  /**
    * @name handlerTXResponse
    * @description Function to resolve a promise evaluating Extrinsic state event
    * @param {*} e Event from transaction subscription
@@ -68,6 +81,11 @@ class BasePolkadotApi {
    * @param {*} unsub Unsubscribe Function
    */
   async handlerTXResponse (e, resolve, reject, unsub) {
+    this.notify({
+      message: 'Waiting for polkadot confirmation',
+      // background: 'green',
+      type: 'listening'
+    })
     const { events = [], status } = e
     console.log('events', events)
     console.log('status', status)
@@ -137,7 +155,7 @@ class BasePolkadotApi {
    * @name isValidPolkadotAddress
    * @description Return a boolean to indicate if is a valid polkadot address
    * @param {String} address polkadot Address
-   * @returns Boolean
+   * @returns BooleanP
    */
   isValidPolkadotAddress (address) {
     return this.polkadotApi.isValidPolkadotAddress(address)
@@ -164,6 +182,25 @@ class BasePolkadotApi {
    */
   async verifyMessage (message, signature, signer) {
     return this.polkadotApi.verifyMessage(message, signature, signer)
+  }
+
+  /**
+   * @description Just a function to map entries response
+   * @param {Array} entries Entries query response
+   * @returns Array
+   */
+  mapEntries (entries) {
+    if (!entries.isEmpty) {
+      return entries.map(e => {
+        // console.log('IDDDD', e[0], e[0].toHuman())
+        return {
+          key: e[0],
+          id: e[0].toHuman(),
+          value: e[1].toHuman()
+        }
+      })
+    }
+    return undefined
   }
 }
 

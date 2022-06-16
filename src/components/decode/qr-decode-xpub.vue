@@ -44,18 +44,23 @@ export default {
     async open (v) {
       await this.$nextTick()
       if (v) {
-        const { state } = await navigator.permissions.query({ name: 'camera' })
-        console.log('cameraPermissions', state)
-        if (state === 'granted' || state === 'prompt') {
-          this.hasCameraPermission = true
-        } else this.hasCameraPermission = false
+        try {
+          const { state } = await navigator.permissions.query({ name: 'camera' })
+          console.log('cameraPermissions', state)
+          if (state === 'granted' || state === 'prompt') {
+            this.hasCameraPermission = true
+          } else this.hasCameraPermission = false
+        } catch (e) {
+          try {
+            // const mdevices = await navigator.mediaDevices.getUserMedia({ video: true })
+            this.hasCameraPermission = true
+          } catch (e) {
+            console.error(e)
+          }
+        }
         // console.log('response ref', permissions, this.$refs.qrReader.camera)
       }
     }
-  },
-  async mounted () {
-    // const r = await navigator.mediaDevices.getUserMedia({ video: true })
-    // console.log('response permissions', r)
   },
   methods: {
     openDialog () {
