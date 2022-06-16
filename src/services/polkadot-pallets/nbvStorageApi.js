@@ -1,8 +1,8 @@
 import BasePolkadotApi from '~/services/basePolkadotApi'
 
 class NbvStorageApi extends BasePolkadotApi {
-  constructor (polkadotApi) {
-    super(polkadotApi, 'nbvStorage')
+  constructor (polkadotApi, notify) {
+    super(polkadotApi, 'nbvStorage', notify)
   }
 
   /**
@@ -15,7 +15,7 @@ class NbvStorageApi extends BasePolkadotApi {
    */
   getXpubByUser (user, subTrigger) {
     // return this.polkadotApi.api.query.nbvStorage.xpubsByOwner(user, subTrigger)
-    return this.exQuery('xpubsByOwner', user, subTrigger)
+    return this.exQuery('xpubsByOwner', [user], subTrigger)
   }
 
   /**
@@ -28,7 +28,7 @@ class NbvStorageApi extends BasePolkadotApi {
    */
   getXpubById (xpubId, subTrigger) {
     // return this.polkadotApi.api.query.nbvStorage.xpubs(xpubId, subTrigger)
-    return this.exQuery('xpubs', xpubId, subTrigger)
+    return this.exQuery('xpubs', [xpubId], subTrigger)
   }
 
   /**
@@ -39,7 +39,7 @@ class NbvStorageApi extends BasePolkadotApi {
    * [{ id }]
    */
   getVaultsByUser ({ user, subTrigger }) {
-    return this.exQuery('vaultsBySigner', user, subTrigger)
+    return this.exQuery('vaultsBySigner', [user], subTrigger)
     // return this.polkadotApi.api.derive.nbvStorage.vaults(user)
   }
 
@@ -125,7 +125,7 @@ class NbvStorageApi extends BasePolkadotApi {
    * [{ id }]
    */
   getProposalsByVault ({ vaultId, subTrigger }) {
-    return this.exQuery('proposalsByVault', vaultId, subTrigger)
+    return this.exQuery('proposalsByVault', [vaultId], subTrigger)
   }
 
   /**

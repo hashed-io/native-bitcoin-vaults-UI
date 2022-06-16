@@ -54,7 +54,7 @@ const routes = [
         path: 'proposal',
         name: 'proposalDetails',
         props: true,
-        component: () => import('pages/proposals/details.vue'),
+        component: () => import('src/pages/proposals/proposal-details.vue'),
         meta: {
           breadcrumb: [
             { name: 'Vaults', icon: 'storage', to: { name: 'manageVaults' } },

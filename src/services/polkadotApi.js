@@ -11,6 +11,7 @@ import { signatureVerify } from '@polkadot/util-crypto'
 class PolkadotApi {
   constructor (wss) {
     this.wss = wss || process.env.WSS
+    // this.wss = 'wss://n4.hashed.systems'
     console.log('polkadotApi constructor', wss, process.env.WSS)
     this.api = undefined
   }

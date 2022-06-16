@@ -94,6 +94,22 @@ export default {
     feeSatPerVb: {
       type: String,
       default: undefined
+    },
+    offchainStatus: {
+      type: String,
+      default: undefined
+    },
+    txId: {
+      type: String,
+      default: undefined
+    },
+    psbt: {
+      type: String,
+      default: undefined
+    },
+    signedPsbts: {
+      type: String,
+      default: undefined
     }
   },
   emits: ['proposalClicked'],
@@ -123,7 +139,10 @@ export default {
         description: this.description,
         amount: this.amount,
         proposer: this.proposer,
-        feeSatPerVb: this.feeSatPerVb
+        feeSatPerVb: this.feeSatPerVb,
+        offchainStatus: this.offchainStatus,
+        txId: this.txId,
+        psbt: this.psbt
       }
       /**
        * Emit proposal data when the card is clicked
