@@ -34,7 +34,7 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
           outlined
           label="Amount in Satoshi"
           v-model="amountInSats"
-          :rules="[rules.required, rules.positiveInteger]"
+          :rules="[rules.required, rules.positiveInteger, rules.lessOrEqualThan(currentBalance || 0)]"
         )
       .col
         .text-body2 {{ $t('general.loremShort')  }}
@@ -56,6 +56,15 @@ import { validation } from '~/mixins/validation'
 export default {
   name: 'CreateProposalForm',
   mixins: [validation],
+  props: {
+    /**
+     * Current vault balance
+     */
+    currentBalance: {
+      type: Number,
+      default: undefined
+    }
+  },
   emits: ['submittedForm'],
   data () {
     return {

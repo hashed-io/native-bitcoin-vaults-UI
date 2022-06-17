@@ -89,7 +89,7 @@
   #modals
     q-dialog(v-model="isShowingCreateProposal" persistent)
       q-card.modalSize
-        create-proposal-form(@submittedForm="createNewProposal")
+        create-proposal-form(@submittedForm="createNewProposal" :currentBalance="balance")
     q-dialog(v-model="isShowingVaultQR")
       q-card.modalQrSize.q-pa-sm
         .text-body2.text-weight-light.q-ml-sm.text-center.q-mt-sm Descriptor QR
@@ -171,11 +171,11 @@ export default {
     },
     async getBalance () {
       try {
-        const data = await this.$store.$bdkApi.getBalance({
+        const balance = await this.$store.$bdkApi.getBalance({
           descriptor: this.outputDescriptor,
           changeDescriptor: this.changeDescriptor
         })
-        this.balance = data
+        this.balance = balance
       } catch (e) {
         console.error('error', e)
         this.showNotification({ message: e.message || e, color: 'negative' })
