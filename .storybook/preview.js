@@ -6,6 +6,7 @@ import '@quasar/extras/animate/fadeInRight.css'
 import '@quasar/extras/animate/fadeOutRight.css'
 
 import 'quasar/dist/quasar.css'
+import '../src/css/app.styl'
 import { app } from '@storybook/vue3'
 import { Quasar } from 'quasar'
 import Vuex from 'vuex'
