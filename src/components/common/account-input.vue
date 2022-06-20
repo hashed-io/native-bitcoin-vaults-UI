@@ -1,6 +1,9 @@
 <template lang="pug">
 #container
     q-input(
+        data-cy="account_input"
+        testid="account_input"
+        data-testid="account_input"
         :label="label"
         v-model="value"
         :outlined="outlined"
