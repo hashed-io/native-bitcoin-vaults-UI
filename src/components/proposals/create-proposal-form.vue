@@ -11,6 +11,7 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
     .row.items-center.q-col-gutter-md.q-my-sm
       .col-7
         q-input(
+          data-testid="description"
           outlined
           label="Description"
           v-model="description"
@@ -21,6 +22,7 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
     .row.items-center.q-col-gutter-md.q-my-sm
       .col-7
         q-input(
+          data-testid="recipient"
           outlined
           label="Recipient address"
           v-model="recipientAddress"
@@ -31,14 +33,16 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
     .row.items-center.q-col-gutter-md.q-my-sm
       .col-7
         q-input(
+          data-testid="amount"
           outlined
           label="Amount in Satoshi"
           v-model="amountInSats"
-          :rules="[rules.required, rules.positiveInteger]"
+          :rules="[rules.required, rules.positiveInteger, rules.lessOrEqualThan(currentBalance || 0)]"
         )
       .col
         .text-body2 {{ $t('general.loremShort')  }}
     q-btn.float-right.q-mb-md(
+        data-testid="submitButton"
         label="Create Proposal"
         color="primary"
         size="md"
@@ -56,6 +60,15 @@ import { validation } from '~/mixins/validation'
 export default {
   name: 'CreateProposalForm',
   mixins: [validation],
+  props: {
+    /**
+     * Current vault balance
+     */
+    currentBalance: {
+      type: Number,
+      default: undefined
+    }
+  },
   emits: ['submittedForm'],
   data () {
     return {

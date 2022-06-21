@@ -2,8 +2,11 @@ const webpackConfig = require('../webpack-config.js')
 const path = require('path');
 module.exports = {
   "stories": ["../src/**/*.stories.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
-  "addons": ["@storybook/addon-links", "@storybook/addon-essentials"],
+  "addons": ["@storybook/addon-links", "@storybook/addon-essentials", "@storybook/addon-interactions"],
   "framework": "@storybook/vue3",
+  features: {
+    interactionsDebugger: true
+  },
   core: {
     builder: "webpack5"
   },

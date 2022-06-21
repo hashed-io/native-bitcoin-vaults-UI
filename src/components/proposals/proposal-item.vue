@@ -108,8 +108,8 @@ export default {
       default: undefined
     },
     signedPsbts: {
-      type: String,
-      default: undefined
+      type: Array,
+      default: () => []
     }
   },
   emits: ['proposalClicked'],
@@ -141,6 +141,7 @@ export default {
         proposer: this.proposer,
         feeSatPerVb: this.feeSatPerVb,
         offchainStatus: this.offchainStatus,
+        signedPsbts: this.signedPsbts,
         txId: this.txId,
         psbt: this.psbt
       }
