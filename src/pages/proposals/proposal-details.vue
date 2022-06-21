@@ -46,15 +46,20 @@
   .text-body2 {{ toAddress }}
   .text-subtitle2.q-mt-md Proposer
   account-item(:address="proposer")
-  #Cosigners.q-my-sm
-    q-btn(
-      label="Scan PSBT"
-      color="secondary"
-      icon="qr_code_scanner"
-      no-caps
-      outline
-      @click="scanPSBT"
-    )
+  .text-subtitle2.q-mt-md Actions
+  .row
+    #proposalsActions.q-my-sm
+      q-btn(
+        label="Scan and save PSBT"
+        color="secondary"
+        icon="qr_code_scanner"
+        no-caps
+        outline
+        @click="scanPSBT"
+      )
+  #cosigners
+    .text-subtitle2.q-mt-md Cosigners
+    cosigners-list(:cosigners="proposalCosigners")
   #modals
     q-dialog(v-model="isShowingPsbtQR")
       q-card.modalQrSize.q-pa-sm
@@ -71,11 +76,12 @@ import { mapGetters } from 'vuex'
 import { AccountItem } from '~/components/common'
 import PsbtQrViewer from '~/components/proposals/psbt-qr-viewer'
 import PsbtQrScanner from '~/components/proposals/psbt-qr-scanner'
+import CosignersList from '~/components/proposals/cosigners-list'
 import { Encoder, Decoder } from '@smontero/nbv-ur-codec'
 
 export default {
   name: 'ProposalDetails',
-  components: { AccountItem, PsbtQrViewer, PsbtQrScanner },
+  components: { AccountItem, PsbtQrViewer, PsbtQrScanner, CosignersList },
   data () {
     return {
       // parentParams: undefined,
@@ -92,7 +98,8 @@ export default {
       offchainStatus: undefined,
       txId: undefined,
       psbt: undefined,
-      signedPsbts: undefined,
+      signedPsbts: [],
+      cosigners: [],
       isShowingPsbtQR: false,
       isShowingScanPsbtQR: false,
       psbtQR: undefined
@@ -102,6 +109,14 @@ export default {
     ...mapGetters('polkadotWallet', ['selectedAccount']),
     hasPsbt () {
       return !!(this.psbt)
+    },
+    proposalCosigners () {
+      return this.cosigners.map(cosigner => {
+        return {
+          address: cosigner,
+          signed: this.signedPsbts.find(v => v.signer === cosigner)
+        }
+      })
     }
   },
   beforeMount () {
@@ -109,6 +124,7 @@ export default {
 
     if (params && params.parentParams && params.proposalParams) {
       const paramsParent = JSON.parse(params.parentParams)
+      this.cosigners = paramsParent.cosigners
       console.log('paramsParent', paramsParent)
       const proposal = JSON.parse(params.proposalParams)
       if (proposal && proposal.vaultId) {
@@ -153,6 +169,19 @@ export default {
       this.psbt = proposal.psbt
       this.signedPsbts = proposal.signedPsbts
     },
+    async updateProposal () {
+      try {
+        this.showLoading({ message: 'Updating proposal' })
+        const proposal = await this.$store.$nbvStorageApi.getProposalsById({ Ids: [this.proposalId] })
+        console.log('updateProposal', proposal[0].toHuman())
+        this.syncData(proposal[0].toHuman())
+      } catch (e) {
+        console.error('error', e)
+        this.showNotification({ message: e.message || e, color: 'negative' })
+      } finally {
+        this.hideLoading()
+      }
+    },
     async onPSBTScanned (data) {
       try {
         this.showLoading()
@@ -166,6 +195,7 @@ export default {
           psbt
         })
         this.showNotification({ message: 'PSBT saved successfully' })
+        this.updateProposal()
       } catch (e) {
         console.error('error', e)
         this.showNotification({ message: e.message || e, color: 'negative' })
