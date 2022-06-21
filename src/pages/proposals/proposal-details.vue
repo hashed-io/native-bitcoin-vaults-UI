@@ -46,30 +46,47 @@
   .text-body2 {{ proposal.toAddress }}
   .text-subtitle2.q-mt-md Proposer
   account-item(:address="proposal.proposer")
+  #Cosigners.q-my-sm
+    q-btn(
+      label="Scan PSBT"
+      color="secondary"
+      icon="qr_code_scanner"
+      no-caps
+      outline
+      @click="scanPSBT"
+    )
   #modals
     q-dialog(v-model="isShowingPsbtQR")
       q-card.modalQrSize.q-pa-sm
-        .text-body2.text-weight-light.q-ml-sm.text-center.q-mt-sm PSBT QR
+        .text-body2.text-weight-light.q-ml-sm.text-center.q-mt-sm Export PSBT QR
         psbt-qr-viewer(:qrs="psbtQR")
+    q-dialog(v-model="isShowingScanPsbtQR")
+      q-card.modalQrSize.q-pa-sm
+        .text-body2.text-weight-light.q-ml-sm.text-center.q-mt-sm Import PSBT QR
+        psbt-qr-scanner(:qrs="psbtQR" @onScanned="onPSBTScanned")
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { AccountItem } from '~/components/common'
 import PsbtQrViewer from '~/components/proposals/psbt-qr-viewer'
-import { Encoder } from '@smontero/nbv-ur-codec'
+import PsbtQrScanner from '~/components/proposals/psbt-qr-scanner'
+import { Encoder, Decoder } from '@smontero/nbv-ur-codec'
 
 export default {
   name: 'ProposalDetails',
-  components: { AccountItem, PsbtQrViewer },
+  components: { AccountItem, PsbtQrViewer, PsbtQrScanner },
   data () {
     return {
       // parentParams: undefined,
       proposal: undefined,
       isShowingPsbtQR: false,
+      isShowingScanPsbtQR: false,
       psbtQR: undefined
     }
   },
   computed: {
+    ...mapGetters('polkadotWallet', ['selectedAccount']),
     hasPsbt () {
       return !!(this.proposal && this.proposal.psbt)
     }
@@ -108,6 +125,37 @@ export default {
     }
   },
   methods: {
+    async onPSBTScanned (data) {
+      try {
+        this.showLoading()
+        this.isShowingScanPsbtQR = false
+        const decoder = new Decoder()
+        const psbt = decoder.decodePSBT(data)
+        console.log('psbt', psbt)
+        await this.$store.$nbvStorageApi.savePsbt({
+          proposalId: this.proposal.proposalId,
+          signer: this.selectedAccount.address,
+          psbt
+        })
+        this.showNotification({ message: 'PSBT saved successfully' })
+      } catch (e) {
+        console.error('error', e)
+        this.showNotification({ message: e.message || e, color: 'negative' })
+      } finally {
+        this.hideLoading()
+      }
+    },
+    scanPSBT () {
+      try {
+        this.showLoading()
+        this.isShowingScanPsbtQR = true
+      } catch (e) {
+        console.error('error', e)
+        this.showNotification({ message: e.message || e, color: 'negative' })
+      } finally {
+        this.hideLoading()
+      }
+    },
     async exportPSBT () {
       try {
         this.showLoading()

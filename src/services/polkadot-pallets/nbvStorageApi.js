@@ -139,6 +139,17 @@ class NbvStorageApi extends BasePolkadotApi {
   getProposalsById ({ Ids, subTrigger }) {
     return this.exMultiQuery('proposals', Ids, subTrigger)
   }
+
+  /**
+   * @description Save signed PSBT for a user
+   * @param {String} proposalId Proposal Id
+   * @param {String} psbt Payload PSBT
+   * @param {String} signer User address to sign
+   * @returns
+   */
+  savePsbt ({ proposalId, psbt, signer }) {
+    return this.callTx('savePsbt', signer, [proposalId, psbt])
+  }
 }
 
 export default NbvStorageApi
