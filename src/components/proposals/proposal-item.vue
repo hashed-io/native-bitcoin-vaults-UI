@@ -108,8 +108,8 @@ export default {
       default: undefined
     },
     signedPsbts: {
-      type: String,
-      default: undefined
+      type: Array,
+      default: () => []
     }
   },
   emits: ['proposalClicked'],
