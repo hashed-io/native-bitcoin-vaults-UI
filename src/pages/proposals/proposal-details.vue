@@ -47,12 +47,21 @@
   .text-subtitle2.q-mt-md Proposer
   account-item(:address="proposer")
   .text-subtitle2.q-mt-md Actions
-  .row
-    #proposalsActions.q-my-sm
+  .row.q-my-sm
+    #proposalsActions
       q-btn(
         label="Scan and save PSBT"
         color="secondary"
         icon="qr_code_scanner"
+        no-caps
+        outline
+        @click="scanPSBT"
+      )
+    #finalizeBtn
+      q-btn(
+        label="Finalize"
+        color="secondary"
+        icon="AssignmentTurnedIn"
         no-caps
         outline
         @click="scanPSBT"
