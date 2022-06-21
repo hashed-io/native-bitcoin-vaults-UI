@@ -2022,10 +2022,10 @@
   resolved "https://registry.yarnpkg.com/@scure/base/-/base-1.0.0.tgz#109fb595021de285f05a7db6806f2f48296fcee7"
   integrity sha512-gIVaYhUsy+9s58m/ETjSJVKHhKTBMmcRb9cEV5/5dwvfDlfORjKrFsDeDHWRrm6RjcPvCLZFwGJjAjLj1gg4HA==
 
-"@smontero/nbv-ur-codec@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@smontero/nbv-ur-codec/-/nbv-ur-codec-1.0.2.tgz#6885995a6529e3c1c0d663db49ba0106fbfeedce"
-  integrity sha512-HnuMhNdS3SXx585FBvoVr9wLQU1sc+BSJAbj7c2RIUUFYfXZ+Z0vvDm/vL6oCwmWE2rToUNQMOKcP/ee6jRJlg==
+"@smontero/nbv-ur-codec@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@smontero/nbv-ur-codec/-/nbv-ur-codec-1.0.3.tgz#c2699131f115917f9628b9c4de189e7ecd529c46"
+  integrity sha512-NJt77UL+ul6gsPIASw5TJ/4ZonGCmJfLvIamqgRO3dG+1gCQU85vqtjziSS46fj3pyr7NJ7+1ZjuBUXl74ApYw==
   dependencies:
     "@keystonehq/bc-ur-registry" "^0.5.0-alpha.6"
     "@ngraveio/bc-ur" "^1.1.6"
