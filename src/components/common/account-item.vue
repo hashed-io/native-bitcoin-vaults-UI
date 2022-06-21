@@ -4,6 +4,7 @@ q-card(:flat="flat" :class="{'inherit': inherit}")
     q-item-section(avatar)
       account-icon(:address="address" size="2em")
     q-item-section {{ displayName }}
+    slot
 </template>
 
 <script>

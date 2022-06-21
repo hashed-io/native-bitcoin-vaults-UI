@@ -141,6 +141,7 @@ export default {
         proposer: this.proposer,
         feeSatPerVb: this.feeSatPerVb,
         offchainStatus: this.offchainStatus,
+        signedPsbts: this.signedPsbts,
         txId: this.txId,
         psbt: this.psbt
       }
