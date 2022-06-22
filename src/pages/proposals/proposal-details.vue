@@ -1,5 +1,7 @@
 <template lang="pug">
 #container
+  //- Error Banner
+  banner(v-bind="offchainMessage")
   //- Header
   .row.justify-between.q-mb-md
     .text-h5 Proposal Details
@@ -47,7 +49,7 @@
   .text-subtitle2.q-mt-md Proposer
   account-item(:address="proposer")
   .text-subtitle2.q-mt-md Actions
-  .row.q-my-sm
+  .row.q-ma-sm.q-gutter-x-sm
     #proposalsActions
       q-btn(
         label="Scan and save PSBT"
@@ -61,7 +63,7 @@
       q-btn(
         label="Finalize"
         color="secondary"
-        icon="AssignmentTurnedIn"
+        icon="assignment_turned_in"
         no-caps
         outline
         @click="scanPSBT"
@@ -82,7 +84,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { AccountItem } from '~/components/common'
+import { AccountItem, Banner } from '~/components/common'
 import PsbtQrViewer from '~/components/proposals/psbt-qr-viewer'
 import PsbtQrScanner from '~/components/proposals/psbt-qr-scanner'
 import CosignersList from '~/components/proposals/cosigners-list'
@@ -90,7 +92,7 @@ import { Encoder, Decoder } from '@smontero/nbv-ur-codec'
 
 export default {
   name: 'ProposalDetails',
-  components: { AccountItem, PsbtQrViewer, PsbtQrScanner, CosignersList },
+  components: { AccountItem, PsbtQrViewer, PsbtQrScanner, CosignersList, Banner },
   data () {
     return {
       // parentParams: undefined,
@@ -111,7 +113,8 @@ export default {
       cosigners: [],
       isShowingPsbtQR: false,
       isShowingScanPsbtQR: false,
-      psbtQR: undefined
+      psbtQR: undefined,
+      offchainMessage: undefined
     }
   },
   computed: {
@@ -177,6 +180,7 @@ export default {
       this.txId = proposal.txId
       this.psbt = proposal.psbt
       this.signedPsbts = proposal.signedPsbts
+      this.handlerOffchainStatus(this.offchainStatus)
     },
     async updateProposal () {
       try {
@@ -236,7 +240,23 @@ export default {
       } finally {
         this.hideLoading()
       }
+    },
+    handlerOffchainStatus (offchainStatus) {
+      if (offchainStatus.IrrecoverableError) {
+        this.offchainMessage = {
+          message: offchainStatus.IrrecoverableError,
+          status: 'error'
+        }
+      } else if (offchainStatus.toLowerCase() === 'pending') {
+        this.offchainMessage = {
+          message: 'Please await a moment, we are creating the PSBT',
+          status: 'loading'
+        }
+      }
     }
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+</style>
