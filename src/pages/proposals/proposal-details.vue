@@ -1,5 +1,7 @@
 <template lang="pug">
 #container
+  //- Error Banner
+  banner.q-mb-md(v-if="offchainMessage" v-bind="offchainMessage" )
   //- Header
   .row.justify-between.q-mb-md
     .text-h5 Proposal Details
@@ -22,6 +24,7 @@
           icon="delete"
           no-caps
           outline
+          @click="removeProposal"
         )
   //- Body
   .text-subtitle2.q-mt-md Vault Id
@@ -47,12 +50,21 @@
   .text-subtitle2.q-mt-md Proposer
   account-item(:address="proposer")
   .text-subtitle2.q-mt-md Actions
-  .row
-    #proposalsActions.q-my-sm
+  .row.q-ma-sm.q-gutter-x-sm
+    #proposalsActions
       q-btn(
         label="Scan and save PSBT"
         color="secondary"
         icon="qr_code_scanner"
+        no-caps
+        outline
+        @click="scanPSBT"
+      )
+    #finalizeBtn
+      q-btn(
+        label="Finalize"
+        color="secondary"
+        icon="assignment_turned_in"
         no-caps
         outline
         @click="scanPSBT"
@@ -73,7 +85,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { AccountItem } from '~/components/common'
+import { AccountItem, Banner } from '~/components/common'
 import PsbtQrViewer from '~/components/proposals/psbt-qr-viewer'
 import PsbtQrScanner from '~/components/proposals/psbt-qr-scanner'
 import CosignersList from '~/components/proposals/cosigners-list'
@@ -81,7 +93,7 @@ import { Encoder, Decoder } from '@smontero/nbv-ur-codec'
 
 export default {
   name: 'ProposalDetails',
-  components: { AccountItem, PsbtQrViewer, PsbtQrScanner, CosignersList },
+  components: { AccountItem, PsbtQrViewer, PsbtQrScanner, CosignersList, Banner },
   data () {
     return {
       // parentParams: undefined,
@@ -102,7 +114,8 @@ export default {
       cosigners: [],
       isShowingPsbtQR: false,
       isShowingScanPsbtQR: false,
-      psbtQR: undefined
+      psbtQR: undefined,
+      offchainMessage: undefined
     }
   },
   computed: {
@@ -155,6 +168,20 @@ export default {
     }
   },
   methods: {
+    async removeProposal () {
+      try {
+        this.showLoading()
+        await this.$store.$nbvStorageApi.removeProposal({
+          proposalId: this.proposalId,
+          signer: this.selectedAccount.address
+        })
+      } catch (e) {
+        console.error('error', e)
+        this.showNotification({ message: e.message || e, color: 'negative' })
+      } finally {
+        this.hideLoading()
+      }
+    },
     syncData (proposal) {
       this.vaultId = proposal.vaultId
       this.proposalId = proposal.proposalId
@@ -168,6 +195,7 @@ export default {
       this.txId = proposal.txId
       this.psbt = proposal.psbt
       this.signedPsbts = proposal.signedPsbts
+      this.handlerOffchainStatus(this.offchainStatus)
     },
     async updateProposal () {
       try {
@@ -227,7 +255,23 @@ export default {
       } finally {
         this.hideLoading()
       }
+    },
+    handlerOffchainStatus (offchainStatus) {
+      if (offchainStatus.IrrecoverableError) {
+        this.offchainMessage = {
+          message: offchainStatus.IrrecoverableError,
+          status: 'error'
+        }
+      } else if (offchainStatus.toLowerCase() === 'pending') {
+        this.offchainMessage = {
+          message: 'Please await a moment, we are creating the PSBT',
+          status: 'loading'
+        }
+      }
     }
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+</style>
