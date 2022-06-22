@@ -96,8 +96,8 @@ export default {
       default: undefined
     },
     offchainStatus: {
-      type: String,
-      default: undefined
+      type: [String, Object],
+      default: () => undefined
     },
     txId: {
       type: String,
