@@ -20,9 +20,10 @@ const Template = (args) => ({
 export const Base = Template.bind({})
 Base.args = {
   vaultId: '0xfec05bfacdb146452aabaa2841978b8b75628e2d554baafa607f43f99cfc2c91',
+  cosigners: ['5CmFmVadzNQFaeiyXXNugRXT1MuaoocUyogtYHEQeWjGp7pX', '5DaWmLfzBTLbKFwBC5YxtAQ45XMSAQCDLcZL6zW9ZiJsGSST'],
   description: 'This is a test for proposals',
   descriptors: undefined,
   owner: '5HGZfBpqUUqGY7uRCYA6aRwnRHJVhrikn8to31GcfNcifkym',
   threshold: 2,
-  cosigners: ['5CmFmVadzNQFaeiyXXNugRXT1MuaoocUyogtYHEQeWjGp7pX', '5DaWmLfzBTLbKFwBC5YxtAQ45XMSAQCDLcZL6zW9ZiJsGSST']
+  offchainStatus: 'offChainStatus'
 }
