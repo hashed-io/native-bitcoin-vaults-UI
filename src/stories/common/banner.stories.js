@@ -20,5 +20,17 @@ const Template = (args) => ({
 export const Base = Template.bind({})
 Base.args = {
   message: 'Hello this is an important message',
+  status: ''
+}
+export const Error = Template.bind({
+  args: {
+    message: 'Hello this is an important message',
+    status: 'error'
+  }
+})
+
+export const Loading = Template.bind({})
+Loading.args = {
+  message: 'Hello this is an important message',
   status: 'loading'
 }
