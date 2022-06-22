@@ -1,7 +1,7 @@
 <template lang="pug">
 q-banner.text-white(rounded :class="{ 'bg-red': error, 'bg-warning': loading, 'bg-primary': normal }")
     template(v-slot:avatar v-if="status")
-      q-spinner-tail(v-if="status === 'loading'" color="white" size="md")
+      q-spinner-tail(v-if="loading" color="white" size="md")
       q-icon(v-else-if="error" name="notification_important" color="white" size="md")
     .text-body2 {{ message }}
 </template>

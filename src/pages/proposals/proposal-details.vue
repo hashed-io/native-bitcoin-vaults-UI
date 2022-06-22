@@ -1,7 +1,7 @@
 <template lang="pug">
 #container
   //- Error Banner
-  banner(v-bind="offchainMessage")
+  banner.q-mb-md(v-if="offchainMessage" v-bind="offchainMessage" )
   //- Header
   .row.justify-between.q-mb-md
     .text-h5 Proposal Details
@@ -24,6 +24,7 @@
           icon="delete"
           no-caps
           outline
+          @click="removeProposal"
         )
   //- Body
   .text-subtitle2.q-mt-md Vault Id
@@ -167,6 +168,20 @@ export default {
     }
   },
   methods: {
+    async removeProposal () {
+      try {
+        this.showLoading()
+        await this.$store.$nbvStorageApi.removeProposal({
+          proposalId: this.proposalId,
+          signer: this.selectedAccount.address
+        })
+      } catch (e) {
+        console.error('error', e)
+        this.showNotification({ message: e.message || e, color: 'negative' })
+      } finally {
+        this.hideLoading()
+      }
+    },
     syncData (proposal) {
       this.vaultId = proposal.vaultId
       this.proposalId = proposal.proposalId
