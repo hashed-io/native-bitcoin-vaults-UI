@@ -11,6 +11,8 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm" ref="form")
     .row.items-center.q-col-gutter-md.q-my-sm
       .col-7
         q-input(
+          data-testid="vault-name-input"
+          data-cy="vault-name-input"
           outlined
           label="Label"
           v-model="description"
@@ -28,6 +30,7 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm" ref="form")
       //-   )
       .col-7
         q-range(
+          data-testid="vault-threshold-input"
           v-model="thresholdRange"
           marker-labels
           markers
@@ -60,6 +63,8 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm" ref="form")
           .row.items-center(v-for="cosigner in cosigners")
             .col
               account-input(
+                data-testid="vault-cosigner-input"
+                data-cy="vault-cosigner-input"
                 label="Account address"
                 v-model="cosigner.address"
                 outlined
@@ -75,8 +80,10 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm" ref="form")
         .col
           .text-body2 {{ $t('vaults.cosignersLabelDesc')  }}
     .q-col-gutter-md.q-my-sm
-      q-toggle(label="Include owner as cosigner" v-model="includeOwnerAsCosigner")
+      q-toggle(data-testid="toggle-include" data-cy="toggle-include" label="Include owner as cosigner" v-model="includeOwnerAsCosigner")
     q-btn.float-right.q-mb-md(
+        data-testid="submitButton"
+        data-cy="submitButton"
         label="Create Vault"
         color="primary"
         size="md"
