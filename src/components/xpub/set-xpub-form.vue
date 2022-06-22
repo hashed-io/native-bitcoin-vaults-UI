@@ -2,6 +2,8 @@
 #container.q-gutter-y-sm
   q-form.q-gutter-y-md(ref="form" @submit="setXpub")
     q-toggle(
+      data-testid="toggleForm"
+      data-cy="toggleForm"
       label="Use form"
       v-model="useForm"
     )
@@ -9,6 +11,8 @@
      .row.q-col-gutter-x-md
         .col-7
           q-input(
+            data-testid="labelInput"
+            data-cy="labelInput"
             v-model="label"
             placeholder="Label"
             label="Label"
@@ -20,6 +24,8 @@
      .row.q-col-gutter-x-md
         .col-7
           q-input(
+            data-testid="publicKey"
+            data-cy="publicKey"
             v-model="publicKey"
             placeholder="Public Key"
             label="Public key"
@@ -31,6 +37,8 @@
      .row.q-col-gutter-x-md
         .col-7
           q-input(
+            data-testid="masterFingerprint"
+            data-cy="masterFingerprint"
             v-model="masterFingerprint"
             placeholder="Master fingerprint"
             label="Master fingerprint"
@@ -42,6 +50,8 @@
      .row.q-col-gutter-x-md
         .col-7
           q-input(
+            data-testid="derivationInput"
+            data-cy="derivationInput"
             v-model="derivation"
             placeholder="Derivation"
             label="Derivation path"
@@ -54,6 +64,8 @@
       .row.q-col-gutter-x-md
         .col-7
             q-input(
+                data-testid="fullXpubInput"
+                data-cy="fullXpubInput"
                 v-model="fullXpub"
                 placeholder="Paste or write your XPUB"
                 label="XPUB"
@@ -62,18 +74,20 @@
                 :rules="[rules.required, rules.isValidFullXpub]"
             )
                 template(v-slot:append)
-                    q-icon.icon-btn(name="qr_code_scanner" @click="toggleQRScanner(true)")
+                    q-icon.icon-btn(data-testid="openQr" data-cy="openQr" name="qr_code_scanner" @click="toggleQRScanner(true)")
                         q-tooltip Scan your XPUB
         .col
           .text-body2 {{ $t('general.lorem')  }}
     q-btn.q-mt-sm(
+      data-testid="submitButton"
+      data-cy="submitButton"
       label="Set XPUB"
       color="primary"
       no-caps
       type="submit"
     )
-  #modals(v-if="qr")
-    qr-decode-xpub(ref="qrDecodeXpub" @xpubDecoded="onDecode")
+  #modals
+    qr-decode-xpub(ref="qrDecodeXpub" @xpubDecoded="onDecode" )
 </template>
 
 <script>
@@ -87,16 +101,16 @@ export default {
   },
   mixins: [validation],
   props: {
+    /**
+     * Polkadot address
+     * This prop is used to set the address in the form
+     */
     userAddress: {
       type: String,
       default: undefined
-    },
-    qr: {
-      type: Boolean,
-      default: true
     }
   },
-  emits: ['submitted'],
+  emits: ['onSubmitted'],
   data () {
     return {
       // fullXpub: "[993D5AA8/48'/0'/0'/2']Zpub752e1TJf2Roex9i8Wr4BCVgtoEWtQQeP2bievFbxFyheuNJoUQMXwxuafVercaBhAWXno2wXWAQesVjrDRNHkCL9Jf89Gx4aRKNNCF5Moq2",
@@ -120,7 +134,7 @@ export default {
     },
     setXpub () {
       const XPUB = (!this.useForm) ? this.fullXpub : `[${this.masterFingerprint}${this.derivation.replace('m', '')}]${this.publicKey}`
-      this.$emit('submitted', {
+      this.$emit('onSubmitted', {
         // XPUB: this.fullXpub
         XPUB
       })
