@@ -16,8 +16,8 @@
           @click="exportPSBT"
           :disabled="!hasPsbt"
         )
-        q-tooltip(v-if="!hasPsbt") Pending
-      #DeleteProposal
+        q-tooltip(v-if="!hasPsbt") {{ validationMessage }}
+      #DeleteProposal(v-if="canRemove")
         q-btn(
           label="Delete Proposal"
           color="negative"
@@ -59,7 +59,9 @@
         no-caps
         outline
         @click="scanPSBT"
+        :disabled="isOffchainError"
       )
+      q-tooltip {{ validationMessage }}
     #finalizeBtn
       q-btn(
         label="Finalize"
@@ -68,7 +70,9 @@
         no-caps
         outline
         @click="scanPSBT"
+        :disabled="isOffchainError"
       )
+      q-tooltip {{ validationMessage }}
   #cosigners
     .text-subtitle2.q-mt-md Cosigners
     cosigners-list(:cosigners="proposalCosigners")
@@ -115,7 +119,8 @@ export default {
       isShowingPsbtQR: false,
       isShowingScanPsbtQR: false,
       psbtQR: undefined,
-      offchainMessage: undefined
+      offchainMessage: undefined,
+      paramsParent: undefined
     }
   },
   computed: {
@@ -130,6 +135,26 @@ export default {
           signed: this.signedPsbts.find(v => v.signer === cosigner)
         }
       })
+    },
+    canRemove () {
+      let canRemove = false
+      if (this.proposer === this.selectedAccount.address) {
+        canRemove = true
+      }
+      return canRemove
+    },
+    isOffchainError () {
+      return !!(this.offchainMessage && this.offchainMessage.status === 'error')
+    },
+    validationMessage () {
+      if (this.offchainStatus) {
+        if (this.offchainMessage.status === 'pending') {
+          return 'Pending'
+        } else if (this.offchainMessage.message) {
+          return this.offchainMessage.message
+        }
+      }
+      return undefined
     }
   },
   beforeMount () {
@@ -137,6 +162,7 @@ export default {
 
     if (params && params.parentParams && params.proposalParams) {
       const paramsParent = JSON.parse(params.parentParams)
+      this.paramsParent = paramsParent
       this.cosigners = paramsParent.cosigners
       console.log('paramsParent', paramsParent)
       const proposal = JSON.parse(params.proposalParams)
@@ -168,12 +194,46 @@ export default {
     }
   },
   methods: {
+    async broadcastPsbt () {
+      try {
+        this.showLoading()
+        await this.$store.$nbvStorageApi.finalizePsbt({
+          proposalId: this.proposalId,
+          signer: this.selectedAccount.address
+        })
+        this.updateProposal()
+      } catch (e) {
+        console.error('error', e)
+        this.showNotification({ message: e.message || e, color: 'negative' })
+      } finally {
+        this.hideLoading()
+      }
+    },
+    async finalizePsbt () {
+      try {
+        this.showLoading()
+        await this.$store.$nbvStorageApi.finalizePsbt({
+          proposalId: this.proposalId,
+          signer: this.selectedAccount.address
+        })
+        this.updateProposal()
+      } catch (e) {
+        console.error('error', e)
+        this.showNotification({ message: e.message || e, color: 'negative' })
+      } finally {
+        this.hideLoading()
+      }
+    },
     async removeProposal () {
       try {
         this.showLoading()
         await this.$store.$nbvStorageApi.removeProposal({
           proposalId: this.proposalId,
           signer: this.selectedAccount.address
+        })
+        this.$router.replace({
+          name: 'vaultDetails',
+          params: { vault: JSON.stringify(this.paramsParent) }
         })
       } catch (e) {
         console.error('error', e)
