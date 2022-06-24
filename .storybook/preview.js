@@ -16,6 +16,8 @@ import messages from '../src/i18n'
 // import messages from '../src/i18n'
 import { createStore } from 'vuex'
 import polkadotWallet from '../src/store/polkadotWallet'
+import notifications from '~/mixins/notifications'
+import { Notify, Loading } from 'quasar'
 
 const store = createStore({
   modules: {
@@ -23,7 +25,16 @@ const store = createStore({
   },
 })
 
-app.use(Quasar, {})
+app.use(Quasar, {
+  plugins: {
+    Notify,
+    Loading
+  },
+  config: {
+    notify: {},
+    loading: {}
+  }
+})
 app.use(Vuex)
 
 const i18n = createI18n({
@@ -32,9 +43,6 @@ const i18n = createI18n({
 })
 app.use(i18n)
 
-
-
-// const store = new Vuex.Store(myStore)
 app.use(store)
 console.log('store on storybook', store)
 
@@ -47,6 +55,10 @@ api.connect().then(() => {
   store['$polkadotApi'] = api
   store['$nbvStorageApi'] = nbvStorageApi
 })
+
+
+app.mixin(notifications)
+
 // const i18n = new VueI18n({
 //   locale: 'en-us',
 //   fallbackLocale: 'en-us',
