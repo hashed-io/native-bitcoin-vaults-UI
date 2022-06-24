@@ -44,13 +44,18 @@
       .text-body2 {{ labelStatus }}
   .row
     .col
+      .text-subtitle2.q-mt-md Threshold
+      .text-body2 {{ threshold }}
+    .col
       .text-subtitle2.q-mt-md Satoshi Amount
       .text-body2 {{ amount }}
     .col
       .text-subtitle2.q-mt-md Fee in Satoshi Per Virtual Byte
       .text-body2 {{ feeSatPerVb }}
-  .text-subtitle2.q-mt-md To Address
-  .text-body2 {{ toAddress }}
+  .row
+    .col
+      .text-subtitle2.q-mt-md To Address
+      .text-body2 {{ toAddress }}
   .text-subtitle2.q-mt-md Proposer
   account-item(:address="proposer")
   #cosigners
@@ -90,6 +95,7 @@ export default {
       isShowingSignPsbt: false,
       psbtQR: undefined,
       offchainMessage: undefined,
+      threshold: undefined,
       paramsParent: undefined
     }
   },
@@ -145,6 +151,7 @@ export default {
       const paramsParent = JSON.parse(params.parentParams)
       this.paramsParent = paramsParent
       this.cosigners = paramsParent.cosigners
+      this.threshold = paramsParent.threshold
       console.log('paramsParent', paramsParent)
       const proposal = JSON.parse(params.proposalParams)
       if (proposal && proposal.vaultId) {
@@ -248,7 +255,8 @@ export default {
         const proposal = await this.$store.$nbvStorageApi.getProposalsById({ Ids: [this.proposalId] })
         this.syncData({
           ...proposal[0].toHuman(),
-          proposalId: this.proposalId
+          proposalId: this.proposalId,
+          threshold: this.threshold
         })
       } catch (e) {
         console.error('error', e)
