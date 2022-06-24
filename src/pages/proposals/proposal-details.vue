@@ -2,21 +2,25 @@
 #container
   //- Error Banner
   banner.q-mb-md(v-if="offchainMessage" v-bind="offchainMessage" )
+  //- Action Btn
+  q-page-sticky(position="bottom-right" :offset="[18, 18]")
+    q-btn(fab icon="refresh" color="secondary" @click="updateProposal")
+      q-tooltip(self="bottom left" anchor="top left" :offset="[10, 10]") Refresh
   //- Header
   .row.justify-between.q-mb-md
     .text-h5 Proposal Details
     .row.q-gutter-x-sm
-      #exportDescriptor.no-padding.q-ma-none
+      #signPSBT
         q-btn(
-          label="Export PSBT"
+          label="Sign PSBT"
           color="secondary"
           icon="qr_code"
           no-caps
           outline
-          @click="exportPSBT"
-          :disabled="!hasPsbt"
+          @click="showSignPSBT"
+          :disabled="isOffchainError"
         )
-        q-tooltip(v-if="!hasPsbt") {{ validationMessage }}
+        q-tooltip(v-if="isOffchainError") {{ validationMessage }}
       #DeleteProposal(v-if="canRemove")
         q-btn(
           label="Delete Proposal"
@@ -37,7 +41,7 @@
       .text-body2 {{ description }}
     .col
       .text-subtitle2.q-mt-md Status
-      .text-body2 {{ status }}
+      .text-body2 {{ labelStatus }}
   .row
     .col
       .text-subtitle2.q-mt-md Satoshi Amount
@@ -49,60 +53,27 @@
   .text-body2 {{ toAddress }}
   .text-subtitle2.q-mt-md Proposer
   account-item(:address="proposer")
-  .text-subtitle2.q-mt-md Actions
-  .row.q-ma-sm.q-gutter-x-sm
-    #proposalsActions
-      q-btn(
-        label="Scan and save PSBT"
-        color="secondary"
-        icon="qr_code_scanner"
-        no-caps
-        outline
-        @click="scanPSBT"
-        :disabled="isOffchainError"
-      )
-      q-tooltip {{ validationMessage }}
-    #finalizeBtn
-      q-btn(
-        label="Finalize"
-        color="secondary"
-        icon="assignment_turned_in"
-        no-caps
-        outline
-        @click="scanPSBT"
-        :disabled="isOffchainError"
-      )
-      q-tooltip {{ validationMessage }}
   #cosigners
     .text-subtitle2.q-mt-md Cosigners
     cosigners-list(:cosigners="proposalCosigners")
   #modals
-    q-dialog(v-model="isShowingPsbtQR")
-      q-card.modalQrSize.q-pa-sm
-        .text-body2.text-weight-light.q-ml-sm.text-center.q-mt-sm Export PSBT QR
-        psbt-qr-viewer(:qrs="psbtQR")
-    q-dialog(v-model="isShowingScanPsbtQR")
-      q-card.modalQrSize.q-pa-sm
-        .text-body2.text-weight-light.q-ml-sm.text-center.q-mt-sm Import PSBT QR
-        psbt-qr-scanner(:qrs="psbtQR" @onScanned="onPSBTScanned")
+    q-dialog(v-model="isShowingSignPsbt")
+      q-card.modalSize.q-pa-sm
+        sign-proposal-stepper(:psbt="psbt" :status="labelStatus" @onSavePsbt="savePsbt")
+
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import { AccountItem, Banner } from '~/components/common'
-import PsbtQrViewer from '~/components/proposals/psbt-qr-viewer'
-import PsbtQrScanner from '~/components/proposals/psbt-qr-scanner'
 import CosignersList from '~/components/proposals/cosigners-list'
-import { Encoder, Decoder } from '@smontero/nbv-ur-codec'
+import SignProposalStepper from '~/components/proposals/sign-proposal-stepper'
 
 export default {
   name: 'ProposalDetails',
-  components: { AccountItem, PsbtQrViewer, PsbtQrScanner, CosignersList, Banner },
+  components: { AccountItem, CosignersList, Banner, SignProposalStepper },
   data () {
     return {
-      // parentParams: undefined,
-      // proposal: undefined,
-      // Proposal data
       vaultId: undefined,
       proposalId: undefined,
       toAddress: undefined,
@@ -116,8 +87,7 @@ export default {
       psbt: undefined,
       signedPsbts: [],
       cosigners: [],
-      isShowingPsbtQR: false,
-      isShowingScanPsbtQR: false,
+      isShowingSignPsbt: false,
       psbtQR: undefined,
       offchainMessage: undefined,
       paramsParent: undefined
@@ -125,6 +95,9 @@ export default {
   },
   computed: {
     ...mapGetters('polkadotWallet', ['selectedAccount']),
+    labelStatus () {
+      return this.status
+    },
     hasPsbt () {
       return !!(this.psbt)
     },
@@ -155,6 +128,14 @@ export default {
         }
       }
       return undefined
+    },
+    canFinalize () {
+      return true
+      // return !!(!this.isOffchainError && this.status === 'Hola')
+    },
+    canBroadcast () {
+      return true
+      // return !!(!this.isOffchainError && this.status === 'Hola')
     }
   },
   beforeMount () {
@@ -194,10 +175,13 @@ export default {
     }
   },
   methods: {
+    showSignPSBT () {
+      this.isShowingSignPsbt = true
+    },
     async broadcastPsbt () {
       try {
         this.showLoading()
-        await this.$store.$nbvStorageApi.finalizePsbt({
+        await this.$store.$nbvStorageApi.broadcastPsbt({
           proposalId: this.proposalId,
           signer: this.selectedAccount.address
         })
@@ -243,6 +227,7 @@ export default {
       }
     },
     syncData (proposal) {
+      console.log('syncData', proposal)
       this.vaultId = proposal.vaultId
       this.proposalId = proposal.proposalId
       this.toAddress = proposal.toAddress
@@ -261,8 +246,10 @@ export default {
       try {
         this.showLoading({ message: 'Updating proposal' })
         const proposal = await this.$store.$nbvStorageApi.getProposalsById({ Ids: [this.proposalId] })
-        console.log('updateProposal', proposal[0].toHuman())
-        this.syncData(proposal[0].toHuman())
+        this.syncData({
+          ...proposal[0].toHuman(),
+          proposalId: this.proposalId
+        })
       } catch (e) {
         console.error('error', e)
         this.showNotification({ message: e.message || e, color: 'negative' })
@@ -270,13 +257,9 @@ export default {
         this.hideLoading()
       }
     },
-    async onPSBTScanned (data) {
+    async savePsbt (psbt) {
       try {
         this.showLoading()
-        this.isShowingScanPsbtQR = false
-        const decoder = new Decoder()
-        const psbt = decoder.decodePSBT(data)
-        console.log('psbt', psbt)
         await this.$store.$nbvStorageApi.savePsbt({
           proposalId: this.proposalId,
           signer: this.selectedAccount.address,
@@ -284,31 +267,6 @@ export default {
         })
         this.showNotification({ message: 'PSBT saved successfully' })
         this.updateProposal()
-      } catch (e) {
-        console.error('error', e)
-        this.showNotification({ message: e.message || e, color: 'negative' })
-      } finally {
-        this.hideLoading()
-      }
-    },
-    scanPSBT () {
-      try {
-        this.showLoading()
-        this.isShowingScanPsbtQR = true
-      } catch (e) {
-        console.error('error', e)
-        this.showNotification({ message: e.message || e, color: 'negative' })
-      } finally {
-        this.hideLoading()
-      }
-    },
-    async exportPSBT () {
-      try {
-        this.showLoading()
-        const encoder = new Encoder()
-        const result = encoder.psbtToQRCode(this.psbt, 200)
-        this.psbtQR = result
-        this.isShowingPsbtQR = true
       } catch (e) {
         console.error('error', e)
         this.showNotification({ message: e.message || e, color: 'negative' })
@@ -327,6 +285,8 @@ export default {
           message: 'Please await a moment, we are creating the PSBT',
           status: 'loading'
         }
+      } else if (offchainStatus.toLowerCase() === 'valid') {
+        this.offchainMessage = undefined
       }
     }
   }

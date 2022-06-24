@@ -7,7 +7,7 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
       v-close-popup
       size="sm"
     )
-    .text-h4.q-mb-lg Create new proposal
+    .text-h4.q-mb-lg {{ $t('proposals.create_proposal') }}
     .row.items-center.q-col-gutter-md.q-my-sm
       .col-7
         q-input(

@@ -2,7 +2,7 @@
 #container
   #empty(v-if="!vaults || vaults.length === 0")
     .text-body2.text-center There are not vaults yet
-  #list(v-else)
+  #list.q-gutter-y-sm(v-else)
     vault-item.animated-item(v-for="vault in vaults" v-bind="vault")
 </template>
 

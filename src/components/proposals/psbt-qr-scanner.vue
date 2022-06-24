@@ -1,6 +1,7 @@
 <template lang="pug">
-#container
-    QrStream.qrContainer(
+#container.relative-position
+    q-spinner-tail.absolute-center.spinner(size="lg")
+    QrStream(
       ref="qrReader"
       @decode="onQrDetected"
     )
@@ -37,7 +38,7 @@ export default {
       if (this.progress === 0) {
         return ''
       }
-      return `Please continue scanning (${this.progress}/100)`
+      return `Please continue scanning (${Number.parseInt(this.progress)}/100)`
     }
   },
   watch: {
@@ -81,8 +82,14 @@ export default {
 
 <style lang="stylus" scoped>
 .progress
-  bottom: 20px
+  bottom: 10%
   text-align: 'center'
+  z-index: 1200
+.spinner
+  z-index: 1
+.qr-stream-wrapper
+  position: 'relative' !important
+  z-index: 1200 !important
 //   left: 0px
 //   right: 0px
 //   top: 20px
