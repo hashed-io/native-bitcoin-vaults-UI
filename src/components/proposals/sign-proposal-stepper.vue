@@ -57,6 +57,7 @@
                         no-caps
                         outline
                         @click="finalizePsbt"
+                        :disabled="!canFinalize"
                     )
                 .col
                     .text-body2 {{ $t('general.lorem') }}
@@ -69,6 +70,7 @@
                         no-caps
                         outline
                         @click="broadcastPsbt"
+                        :disabled="!canBroadcast"
                     )
                 .col
                     .text-body2 {{ $t('general.lorem') }}
@@ -97,6 +99,20 @@ export default {
     psbt: {
       type: String,
       default: undefined
+    },
+    /**
+     * Boolean to know if the proposal can be finalized
+     */
+    canFinalize: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * Boolean to know if the proposal can be broadcasted
+     */
+    canBroadcast: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['onSavePsbt', 'onFinalizePsbt', 'onBroadcastPsbt'],
@@ -151,12 +167,21 @@ export default {
       }
     },
     savePsbt () {
+      /**
+       * Emitted when the user click on save psbt button
+       */
       this.$emit('onSavePsbt', this.signedPsbt)
     },
     finalizePsbt () {
+      /**
+       * Emitted when the user click on finalize psbt button
+       */
       this.$emit('onFinalizePsbt', this.signedPsbt)
     },
     broadcastPsbt () {
+      /**
+       * Emitted when the user click on broadcast psbt button
+       */
       this.$emit('onBroadcastPsbt', this.signedPsbt)
     }
   }

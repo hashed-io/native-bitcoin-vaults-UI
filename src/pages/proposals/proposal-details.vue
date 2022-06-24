@@ -59,7 +59,7 @@
   #modals
     q-dialog(v-model="isShowingSignPsbt")
       q-card.modalSize.q-pa-sm
-        sign-proposal-stepper(:psbt="psbt" :status="labelStatus" @onSavePsbt="savePsbt")
+        sign-proposal-stepper(:psbt="psbt" :canFinalize="canFinalize" :canBroadcast="canBroadcast" @onSavePsbt="savePsbt")
 
 </template>
 
@@ -134,7 +134,7 @@ export default {
       // return !!(!this.isOffchainError && this.status === 'Hola')
     },
     canBroadcast () {
-      return true
+      return false
       // return !!(!this.isOffchainError && this.status === 'Hola')
     }
   },
