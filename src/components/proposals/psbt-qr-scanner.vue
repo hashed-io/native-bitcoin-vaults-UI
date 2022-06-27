@@ -61,6 +61,7 @@ export default {
           message: 'PSBT not valid, please try again',
           color: 'red'
         })
+        return
       }
       const split = data.split('/')
       const index = split[1]
