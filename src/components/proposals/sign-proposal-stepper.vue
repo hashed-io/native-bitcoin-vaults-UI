@@ -59,9 +59,9 @@
                         no-caps
                         outline
                         @click="finalizePsbt"
-                        :disabled="(!canFinalize || isFinalized)"
+                        :disabled="(!canFinalize || isFinalized || isBroadcasted)"
                     )
-                    q-tooltip(v-if="isFinalized") Already finalized
+                    q-tooltip(v-if="(isFinalized || isBroadcasted)") Already finalized
                 .col
                     .text-body2 {{ $t('general.lorem') }}
         .col
