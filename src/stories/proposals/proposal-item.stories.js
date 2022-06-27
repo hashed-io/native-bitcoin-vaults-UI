@@ -35,5 +35,5 @@ Base.args = {
   offchainStatus: 'pending',
   txId: 'tx-id-1',
   psbt: 'psbt-1',
-  signedPsbts: 'signed-psbts-1'
+  signedPsbts: ['signed-psbts-1']
 }

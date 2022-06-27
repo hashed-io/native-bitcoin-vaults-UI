@@ -96,8 +96,8 @@ export default {
       default: undefined
     },
     offchainStatus: {
-      type: String,
-      default: undefined
+      type: [String, Object],
+      default: () => undefined
     },
     txId: {
       type: String,
@@ -115,15 +115,28 @@ export default {
   emits: ['proposalClicked'],
   computed: {
     chipStatus () {
+      const chip = {
+        color: 'warning',
+        'text-color': 'white',
+        icon: 'error',
+        label: 'Pending',
+        size: '1.2em',
+        ripple: false,
+        clickable: false
+      }
       if (this.status && this.status.toLowerCase() === 'pending') {
+        return chip
+      } else if (this.status && this.status.toLowerCase() === 'finalized') {
         return {
-          color: 'warning',
-          'text-color': 'white',
-          icon: 'error',
-          label: 'Pending',
-          size: '1.2em',
-          ripple: false,
-          clickable: false
+          ...chip,
+          color: 'positive',
+          label: 'Finalized'
+        }
+      } else if (this.status && this.status.toLowerCase() === 'broadcasted') {
+        return {
+          ...chip,
+          color: 'positive',
+          label: 'Broadcasted'
         }
       }
       return undefined

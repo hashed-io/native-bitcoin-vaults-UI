@@ -20,7 +20,7 @@ export const validation = {
         isValidFingerPrint: val => /([0-Z]{8,8})/.test(val) || this.$t('forms.errors.isNotValidFingerprint'),
         isValidDerivationPath: val => /([m]\/[0-9]{1,2}(')(\/)[0-9]{1,2}(')\/[0-9]{1,2}(')\/[0-9]('){1,30})/.test(val) || this.$t('forms.errors.isNotValidDerivationPath'),
         isValidMainetBTC: val => /([13][a-km-zA-HJ-NP-Z1-9]{25,34}|bc1[ac-hj-np-zAC-HJ-NP-Z02-9]{11,71})/.test(val) || this.$t('forms.errors.isNotValidMainetBTC'),
-        isValidPolkadotAddress: val => this.$store.$polkadotApi.isValidPolkadotAddress(val) || this.$t('forms.errors.isNotValidPolkadotAddress'),
+        isValidPolkadotAddress: val => this.$store.$polkadotApi?.isValidPolkadotAddress(val) || this.$t('forms.errors.isNotValidPolkadotAddress'),
         notOwnAccount: value => val => !(value === val) || this.$t('forms.errors.notOwnAccount')
       }
     }

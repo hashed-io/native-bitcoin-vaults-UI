@@ -141,6 +141,17 @@ class NbvStorageApi extends BasePolkadotApi {
   }
 
   /**
+   * @name removeProposal
+   * @description Remove a proposal
+   * @param {String} proposalId Proposal Id
+   * @param {String} signer User address to sign
+   * @returns
+   */
+  removeProposal ({ proposalId, signer }) {
+    return this.callTx('removeProposal', signer, [proposalId])
+  }
+
+  /**
    * @description Save signed PSBT for a user
    * @param {String} proposalId Proposal Id
    * @param {String} psbt Payload PSBT
@@ -149,6 +160,27 @@ class NbvStorageApi extends BasePolkadotApi {
    */
   savePsbt ({ proposalId, psbt, signer }) {
     return this.callTx('savePsbt', signer, [proposalId, psbt])
+  }
+
+  /**
+   * @description Finalize PSBT
+   * @param {String} proposalId Proposal Id
+   * @param {String} broadcast Boolean
+   * @param {String} signer User address to sign
+   * @returns
+   */
+  finalizePsbt ({ proposalId, broadcast = false, signer }) {
+    return this.callTx('finalizePsbt', signer, [proposalId, broadcast])
+  }
+
+  /**
+   * @description Broadcast PSBT
+   * @param {String} proposalId Proposal Id
+   * @param {String} signer User address to sign
+   * @returns
+   */
+  broadcastPsbt ({ proposalId, signer }) {
+    return this.callTx('broadcastPsbt', signer, [proposalId])
   }
 }
 

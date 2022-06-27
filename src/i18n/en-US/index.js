@@ -35,5 +35,8 @@ export default {
     cosigners: 'Cosigners',
     cosignersLabelDesc: 'Enter a valid public address for each cosigner',
     mOfn: 'M of N'
+  },
+  proposals: {
+    create_proposal: 'Create new proposal'
   }
 }
