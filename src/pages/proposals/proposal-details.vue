@@ -64,7 +64,17 @@
   #modals
     q-dialog(v-model="isShowingSignPsbt")
       q-card.modalSize.q-pa-sm
-        sign-proposal-stepper(:psbt="psbt" :canFinalize="canFinalize" :canBroadcast="canBroadcast" @onSavePsbt="savePsbt")
+        sign-proposal-stepper(
+          :psbt="psbt"
+          :canFinalize="canFinalize"
+          :canBroadcast="canBroadcast"
+          :alreadySigned="alreadySigned"
+          :isBroadcasted="isBroadcasted"
+          :isFinalized="isFinalized"
+          @onSavePsbt="savePsbt"
+          @onFinalizePsbt="finalizePsbt"
+          @onBroadcastPsbt="broadcastPsbt"
+        )
 
 </template>
 
@@ -102,6 +112,11 @@ export default {
   computed: {
     ...mapGetters('polkadotWallet', ['selectedAccount']),
     labelStatus () {
+      if (this.status && this.status.ReadyToFinalize === true) {
+        return 'Finalizing'
+      } else if (this.status && this.status.ReadyToFinalize === false) {
+        return 'Broadcasting'
+      }
       return this.status
     },
     hasPsbt () {
@@ -127,7 +142,7 @@ export default {
     },
     validationMessage () {
       if (this.offchainStatus) {
-        if (this.offchainMessage.status === 'pending') {
+        if (this.offchainStatus.status && this.offchainMessage.status === 'pending') {
           return 'Pending'
         } else if (this.offchainMessage.message) {
           return this.offchainMessage.message
@@ -136,12 +151,20 @@ export default {
       return undefined
     },
     canFinalize () {
-      return true
-      // return !!(!this.isOffchainError && this.status === 'Hola')
+      const signers = this.proposalCosigners.filter(v => v.signed)
+      return !!(signers.length >= this.threshold)
     },
     canBroadcast () {
-      return false
-      // return !!(!this.isOffchainError && this.status === 'Hola')
+      return !!(this.labelStatus === 'Finalized')
+    },
+    isBroadcasted () {
+      return !!(this.labelStatus === 'Broadcasted')
+    },
+    isFinalized () {
+      return !!(this.labelStatus === 'Finalized')
+    },
+    alreadySigned () {
+      return !!this.signedPsbts.find(v => v.signer === this.selectedAccount.address)
     }
   },
   beforeMount () {
@@ -192,6 +215,8 @@ export default {
           proposalId: this.proposalId,
           signer: this.selectedAccount.address
         })
+        this.isShowingSignPsbt = false
+        this.showNotification({ message: 'Broadcasting' })
         this.updateProposal()
       } catch (e) {
         console.error('error', e)
@@ -207,6 +232,8 @@ export default {
           proposalId: this.proposalId,
           signer: this.selectedAccount.address
         })
+        this.isShowingSignPsbt = false
+        this.showNotification({ message: 'Finalized' })
         this.updateProposal()
       } catch (e) {
         console.error('error', e)

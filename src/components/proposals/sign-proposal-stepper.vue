@@ -33,7 +33,7 @@
       title="Finalize"
       icon="settings"
       :done="step > steps.finalize"
-      :disable="!signedPsbt"
+      :disable="!canShowLastStep"
     )
       .column.minH
         .col
@@ -45,7 +45,9 @@
                         no-caps
                         outline
                         @click="savePsbt"
+                        :disabled="!signedPsbt"
                     )
+                    q-tooltip(v-if="alreadySigned") You already signed
                 .col
                     .text-body2 {{ $t('general.lorem') }}
         .col
@@ -57,8 +59,9 @@
                         no-caps
                         outline
                         @click="finalizePsbt"
-                        :disabled="!canFinalize"
+                        :disabled="(!canFinalize || isFinalized)"
                     )
+                    q-tooltip(v-if="isFinalized") Already finalized
                 .col
                     .text-body2 {{ $t('general.lorem') }}
         .col
@@ -70,8 +73,9 @@
                         no-caps
                         outline
                         @click="broadcastPsbt"
-                        :disabled="!canBroadcast"
+                        :disabled="(!canBroadcast || isBroadcasted)"
                     )
+                    q-tooltip(v-if="isBroadcasted") Already broadcasted
                 .col
                     .text-body2 {{ $t('general.lorem') }}
     template(v-slot:navigation)
@@ -113,6 +117,27 @@ export default {
     canBroadcast: {
       type: Boolean,
       default: false
+    },
+    /**
+     * Boolean to know if the current user already sign the psbt
+     */
+    alreadySigned: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * Boolean to know if the proposal was broadcasted
+     */
+    isBroadcasted: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * Boolean to know if the proposal was finalized
+     */
+    isFinalized: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['onSavePsbt', 'onFinalizePsbt', 'onBroadcastPsbt'],
@@ -128,6 +153,11 @@ export default {
       signedPsbt: undefined
     }
   },
+  computed: {
+    canShowLastStep () {
+      return (this.signedPsbt || this.canFinalize || this.alreadySigned)
+    }
+  },
   watch: {
     psbt () {
       this.getPsbtQR()
@@ -135,6 +165,9 @@ export default {
   },
   beforeMount () {
     this.getPsbtQR()
+    if (this.alreadySigned) {
+      this.step = this.steps.finalize
+    }
   },
   methods: {
     getPsbtQR () {
