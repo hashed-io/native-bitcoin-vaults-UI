@@ -118,7 +118,7 @@ export default {
     return {
       description: undefined,
       threshold: undefined,
-      includeOwnerAsCosigner: false,
+      includeOwnerAsCosigner: true,
       thresholdRange: {
         min: 1,
         max: 1

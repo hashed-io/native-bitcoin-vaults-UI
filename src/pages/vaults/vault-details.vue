@@ -55,7 +55,7 @@
   q-card.q-pa-xs(v-if="outputDescriptor")
     q-item
       q-item-section.no-padding(v-if="vaultAddress")
-        .text-body2 {{ vaultAddress }}
+        q-item-label.text-body2(lines="1") {{ vaultAddress }}
       q-item-section.no-padding(avatar)
         q-btn(
           :label="!vaultAddress ? 'Get receive address' : 'Refresh receive address'"
