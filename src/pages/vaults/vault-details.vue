@@ -171,7 +171,7 @@ export default {
     if (!params || !params.vault) this.$router.replace({ name: 'manageVaults' })
     const vault = JSON.parse(params.vault)
     if (!vault || !vault.owner || !vault.vaultId) this.$router.replace({ name: 'manageVaults' })
-    this.loadDetails(vault)
+    this.syncData(vault)
     // this.$route.meta.breadcrumb[1].name = 'Detailsss'
   },
   methods: {
@@ -205,9 +205,6 @@ export default {
         this.getProposals()
         this.getBalance()
       }
-    },
-    async loadDetails (vault) {
-      this.syncData(vault)
     },
     async getBalance () {
       try {
@@ -266,6 +263,7 @@ export default {
           descriptor: this.outputDescriptor
         })
         this.vaultAddress = data
+        this.copyTextToClipboard(data)
       } catch (e) {
         console.error('error', e)
         this.showNotification({ message: e.message || e, color: 'negative' })
@@ -334,16 +332,6 @@ export default {
           proposalParams: ProposalParams
         }
       })
-    },
-    copyTextToClipboard (data) {
-      try {
-        navigator.clipboard.writeText(data).then(e => {
-          this.showNotification({ message: 'Text copied to clipboard' })
-        })
-      } catch (e) {
-        console.error('error', e)
-        this.showNotification({ message: e.message || e, color: 'negative' })
-      }
     },
     handlerOffchainStatus (offchainStatus) {
       if (offchainStatus.IrrecoverableError) {
