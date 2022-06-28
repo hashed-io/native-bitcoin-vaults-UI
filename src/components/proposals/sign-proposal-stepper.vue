@@ -82,7 +82,7 @@
       q-stepper-navigation
         .row.justify-end
             q-btn(v-if="step > 1" @click="$refs.stepper.previous()" flat color="primary" label="Back" class="q-ml-sm")
-            q-btn(@click="$refs.stepper.next()" color="primary" :label="step === 4 ? 'Finish' : 'Continue'")
+            q-btn(v-if="step !== steps.finalize" @click="$refs.stepper.next()" color="primary" :label="step === 3 ? 'Finish' : 'Continue'")
 </template>
 
 <script>
