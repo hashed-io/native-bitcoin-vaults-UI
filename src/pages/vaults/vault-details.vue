@@ -1,5 +1,11 @@
 <template lang="pug">
 #container
+  //- Error Banner
+  banner.q-mb-md(v-if="offchainMessage" v-bind="offchainMessage" )
+  //- Action Btn
+  q-page-sticky(position="bottom-right" :offset="[18, 18]")
+    q-btn(fab icon="refresh" color="secondary" @click="updateVault")
+      q-tooltip(self="bottom left" anchor="top left" :offset="[10, 10]") Refresh
   //- Header
   .row.justify-between.q-mb-md
     .text-h5 Vault Details
@@ -106,14 +112,14 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { AccountItem } from '~/components/common'
+import { AccountItem, Banner } from '~/components/common'
 import CreateProposalForm from '~/components/proposals/create-proposal-form'
 import ProposalsList from '~/components/proposals/proposals-list'
 import { Encoder } from '@smontero/nbv-ur-codec'
 
 export default {
   name: 'VaultDetails',
-  components: { AccountItem, CreateProposalForm, ProposalsList },
+  components: { AccountItem, CreateProposalForm, ProposalsList, Banner },
   data () {
     return {
       vaultId: undefined,
@@ -130,6 +136,7 @@ export default {
       vaultQrText: undefined,
       vaultAddress: undefined,
       balance: undefined,
+      offchainMessage: undefined,
       proposalsList: []
     }
   },
@@ -137,6 +144,19 @@ export default {
     ...mapGetters('polkadotWallet', ['selectedAccount']),
     iAmOwner () {
       return this.selectedAccount.address === this.owner
+    },
+    isOffchainError () {
+      return !!(this.offchainMessage && this.offchainMessage.status === 'error')
+    },
+    validationMessage () {
+      if (this.offchainStatus) {
+        if (this.offchainStatus.status && this.offchainMessage.status === 'pending') {
+          return 'Pending'
+        } else if (this.offchainMessage.message) {
+          return this.offchainMessage.message
+        }
+      }
+      return undefined
     }
   },
   watch: {
@@ -155,19 +175,39 @@ export default {
     // this.$route.meta.breadcrumb[1].name = 'Detailsss'
   },
   methods: {
-    async loadDetails (vault) {
+    async updateVault () {
+      try {
+        this.showLoading({ message: 'Updating proposal' })
+        const vault = await this.$store.$nbvStorageApi.getVaultsById({ Ids: [this.vaultId] })
+        this.syncData({
+          ...vault[0].toHuman(),
+          vaultId: this.vaultId
+        })
+      } catch (e) {
+        console.error('error', e)
+        this.showNotification({ message: e.message || e, color: 'negative' })
+      } finally {
+        this.hideLoading()
+      }
+    },
+    syncData (vault) {
+      console.log('syncData', vault)
       this.vaultId = vault.vaultId
       this.owner = vault.owner
       this.description = vault?.description
       this.threshold = vault?.threshold
       this.cosigners = vault?.cosigners
-      this.outputDescriptor = vault?.outputDescriptor
-      this.changeDescriptor = vault?.changeDescriptor
+      this.outputDescriptor = vault?.descriptors?.outputDescriptor
+      this.changeDescriptor = vault?.descriptors?.changeDescriptor
       this.offchainStatus = vault?.offchainStatus
+      this.handlerOffchainStatus(this.offchainStatus)
       if (this.vaultId && this.outputDescriptor) {
         this.getProposals()
         this.getBalance()
       }
+    },
+    async loadDetails (vault) {
+      this.syncData(vault)
     },
     async getBalance () {
       try {
@@ -303,6 +343,21 @@ export default {
       } catch (e) {
         console.error('error', e)
         this.showNotification({ message: e.message || e, color: 'negative' })
+      }
+    },
+    handlerOffchainStatus (offchainStatus) {
+      if (offchainStatus.IrrecoverableError) {
+        this.offchainMessage = {
+          message: offchainStatus.IrrecoverableError,
+          status: 'error'
+        }
+      } else if (offchainStatus.toLowerCase() === 'pending') {
+        this.offchainMessage = {
+          message: 'Please await a moment, we are creating the descriptor',
+          status: 'loading'
+        }
+      } else if (offchainStatus.toLowerCase() === 'valid') {
+        this.offchainMessage = undefined
       }
     }
   }
