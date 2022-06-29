@@ -94,7 +94,7 @@
   proposals-list(:proposals="proposalsList" @onProposalSelected="goToProposalDetails")
   #modals
     q-dialog(v-model="isShowingCreateProposal" persistent)
-      q-card.modalSize
+      q-card.modalSize.minH
         create-proposal-form(@submittedForm="createNewProposal" :currentBalance="balance")
     q-dialog(v-model="isShowingVaultQR")
       q-card.modalQrSize.q-pa-sm
@@ -356,4 +356,7 @@ export default {
 .qrContainer
   width: '200px'
   height : '200px'
+
+.minH
+ height: 700px !important
 </style>

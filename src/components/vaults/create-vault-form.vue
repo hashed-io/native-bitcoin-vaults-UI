@@ -1,5 +1,6 @@
 <template lang="pug">
 q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm" ref="form")
+  .minH
     q-btn.float-right(
       icon="close"
       round
@@ -60,12 +61,29 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm" ref="form")
             //- )
       .row.items-center.q-col-gutter-md.q-mb-sm
         .col-7
+          .row.items-center.q-mb-md(v-if="includeOwnerAsCosigner")
+            .col
+              account-input(
+                data-testid="vault-cosigner-input-own"
+                data-cy="vault-cosigner-input-own"
+                label='Account address'
+                v-model="ownerAddress"
+                outlined
+                readonly
+              )
+            q-icon.icon-btn.q-mb-md(
+              size="md"
+              name="delete"
+              color="negative"
+              @click="removeCosigner(cosigner.id)"
+              v-if="cosigners.length > 1"
+            )
           .row.items-center(v-for="cosigner in cosigners")
             .col
               account-input(
                 data-testid="vault-cosigner-input"
                 data-cy="vault-cosigner-input"
-                label="Account address"
+                label='Account address'
                 v-model="cosigner.address"
                 outlined
                 :rules="[rules.required, rules.isValidPolkadotAddress, rules.notOwnAccount(signer), notDuplicatedAccounts]"
@@ -126,7 +144,8 @@ export default {
       cosigners: [{
         id: 0,
         address: undefined
-      }]
+      }],
+      ownerAddress: undefined
     }
   },
   computed: {
@@ -138,18 +157,36 @@ export default {
         return this.cosigners.length + 1
       }
       return this.cosigners.length
+    },
+    realCosignerNumber () {
+      let result = this.thresholdRange.max
+      if (this.includeOwnerAsCosigner) {
+        result -= 1
+      }
+      return result
     }
   },
   watch: {
     async includeOwnerAsCosigner () {
       await this.$nextTick()
+      this.setCosigners()
       this.$refs.form.validate()
     },
     async cosigners () {
       await this.$nextTick()
       this.$refs.form.resetValidation()
     },
-    async 'thresholdRange.max' (newLength) {
+    async 'thresholdRange.max' () {
+      this.setCosigners()
+    }
+  },
+  mounted () {
+    this.thresholdRange.max = 7
+    this.ownerAddress = this.signer
+  },
+  methods: {
+    async setCosigners () {
+      const newLength = this.realCosignerNumber
       await this.$nextTick()
       const currentLength = this.cosigners.length
       await this.$nextTick()
@@ -168,12 +205,7 @@ export default {
           this.addNewCosigner()
         }
       }
-    }
-  },
-  mounted () {
-    this.thresholdRange.max = 7
-  },
-  methods: {
+    },
     async submitForm () {
       try {
         const data = {
@@ -212,3 +244,8 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+.minH
+ height: 640px
+</style>
