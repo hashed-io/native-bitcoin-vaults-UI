@@ -9,7 +9,7 @@
   //- Header
   .row.justify-between.q-mb-md
     .text-h5 Proposal Details
-    .row.q-gutter-x-sm
+    .row.q-gutter-x-sm(v-if="!isBroadcasted")
       #signPSBT
         q-btn(
           label="Sign PSBT"
@@ -115,6 +115,19 @@ export default {
   },
   computed: {
     ...mapGetters('polkadotWallet', ['selectedAccount']),
+    labelActionBtn () {
+      switch (this.labelStatus) {
+      case 'Pending':
+        if (this.canFinalize) {
+          return 'Finalize Txx'
+        }
+        return 'Sign Psbt'
+      case 'Finalized':
+        return 'Broadcast Tx'
+      default:
+        return 'Sign Psbt'
+      }
+    },
     labelStatus () {
       if (this.status && this.status.ReadyToFinalize === true) {
         return 'Finalizing'
@@ -268,7 +281,7 @@ export default {
       }
     },
     syncData (proposal) {
-      console.log('syncData', proposal)
+      console.log('proposal syncData', proposal)
       this.vaultId = proposal.vaultId
       this.proposalId = proposal.proposalId
       this.toAddress = proposal.toAddress
