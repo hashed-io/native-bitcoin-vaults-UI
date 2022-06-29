@@ -9,7 +9,7 @@
   //- Header
   .row.justify-between.q-mb-md
     .text-h5 Proposal Details
-    .row.q-gutter-x-sm
+    .row.q-gutter-x-sm(v-if="!isBroadcasted")
       #signPSBT
         q-btn(
           label="Sign PSBT"
@@ -56,6 +56,10 @@
     .col
       .text-subtitle2.q-mt-md To Address
       .text-body2 {{ toAddress }}
+  .row(v-if="txId")
+    .col
+      .text-subtitle2.q-mt-md Tx
+      .text-body2.txLabel(@click="openTxExplorer") {{ txId }}
   .text-subtitle2.q-mt-md Proposer
   account-item(:address="proposer")
   #cosigners
@@ -111,6 +115,19 @@ export default {
   },
   computed: {
     ...mapGetters('polkadotWallet', ['selectedAccount']),
+    labelActionBtn () {
+      switch (this.labelStatus) {
+      case 'Pending':
+        if (this.canFinalize) {
+          return 'Finalize Txx'
+        }
+        return 'Sign Psbt'
+      case 'Finalized':
+        return 'Broadcast Tx'
+      default:
+        return 'Sign Psbt'
+      }
+    },
     labelStatus () {
       if (this.status && this.status.ReadyToFinalize === true) {
         return 'Finalizing'
@@ -132,7 +149,7 @@ export default {
     },
     canRemove () {
       let canRemove = false
-      if (this.proposer === this.selectedAccount.address) {
+      if (this.proposer === this.selectedAccount.address && this.status === 'Pending') {
         canRemove = true
       }
       return canRemove
@@ -175,7 +192,7 @@ export default {
       this.paramsParent = paramsParent
       this.cosigners = paramsParent.cosigners
       this.threshold = paramsParent.threshold
-      console.log('paramsParent', paramsParent)
+      // console.log('paramsParent', paramsParent)
       const proposal = JSON.parse(params.proposalParams)
       if (proposal && proposal.vaultId) {
         // this.proposal = proposal
@@ -205,6 +222,9 @@ export default {
     }
   },
   methods: {
+    openTxExplorer () {
+      window.open(`https://mempool.space/tx/${this.txId}`, 'blank')
+    },
     showSignPSBT () {
       this.isShowingSignPsbt = true
     },
@@ -261,7 +281,7 @@ export default {
       }
     },
     syncData (proposal) {
-      console.log('syncData', proposal)
+      // console.log('proposal syncData', proposal)
       this.vaultId = proposal.vaultId
       this.proposalId = proposal.proposalId
       this.toAddress = proposal.toAddress
@@ -300,6 +320,7 @@ export default {
           signer: this.selectedAccount.address,
           psbt
         })
+        this.isShowingSignPsbt = false
         this.showNotification({ message: 'PSBT saved successfully' })
         this.updateProposal()
       } catch (e) {
@@ -329,4 +350,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+.txLabel
+  text-decoration: underline
+  cursor: pointer
 </style>
