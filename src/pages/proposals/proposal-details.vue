@@ -56,6 +56,10 @@
     .col
       .text-subtitle2.q-mt-md To Address
       .text-body2 {{ toAddress }}
+  .row(v-if="txId")
+    .col
+      .text-subtitle2.q-mt-md Tx
+      .text-body2.txLabel(@click="openTxExplorer") {{ txId }}
   .text-subtitle2.q-mt-md Proposer
   account-item(:address="proposer")
   #cosigners
@@ -132,7 +136,7 @@ export default {
     },
     canRemove () {
       let canRemove = false
-      if (this.proposer === this.selectedAccount.address) {
+      if (this.proposer === this.selectedAccount.address && this.status === 'Pending') {
         canRemove = true
       }
       return canRemove
@@ -205,6 +209,9 @@ export default {
     }
   },
   methods: {
+    openTxExplorer () {
+      window.open(`https://mempool.space/tx/${this.txId}`, 'blank')
+    },
     showSignPSBT () {
       this.isShowingSignPsbt = true
     },
@@ -300,6 +307,7 @@ export default {
           signer: this.selectedAccount.address,
           psbt
         })
+        this.isShowingSignPsbt = false
         this.showNotification({ message: 'PSBT saved successfully' })
         this.updateProposal()
       } catch (e) {
@@ -329,4 +337,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+.txLabel
+  text-decoration: underline
+  cursor: pointer
 </style>

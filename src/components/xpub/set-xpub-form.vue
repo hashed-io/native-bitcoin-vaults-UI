@@ -14,52 +14,52 @@
             data-testid="labelInput"
             data-cy="labelInput"
             v-model="label"
-            placeholder="Label"
-            label="Label"
+            :placeholder="$t('xpub.label')"
+            :label="$t('xpub.label')"
             outlined
             disable
           )
         .col
-          .text-body2 {{ $t('general.lorem')  }}
+          .text-body2 {{ $t('xpub.labelDesc')  }}
      .row.q-col-gutter-x-md
         .col-7
           q-input(
             data-testid="publicKey"
             data-cy="publicKey"
             v-model="publicKey"
-            placeholder="Public Key"
-            label="Public key"
+            :placeholder="$t('xpub.publicKey')"
+            :label="$t('xpub.publicKey')"
             outlined
             :rules="[rules.required, rules.isValidXPub]"
           )
         .col
-          .text-body2 {{ $t('general.loremShort')  }}
+          .text-body2 {{ $t('xpub.pubicKeyDesc')  }}
      .row.q-col-gutter-x-md
         .col-7
           q-input(
             data-testid="masterFingerprint"
             data-cy="masterFingerprint"
             v-model="masterFingerprint"
-            placeholder="Master fingerprint"
-            label="Master fingerprint"
+            :placeholder="$t('xpub.masterFingerPrint')"
+            :label="$t('xpub.masterFingerPrint')"
             :rules="[rules.required, rules.isValidFingerPrint]"
             outlined
           )
         .col
-          .text-body2 {{ $t('general.loremShort')  }}
+          .text-body2 {{ $t('xpub.fingerprintDesc')  }}
      .row.q-col-gutter-x-md
         .col-7
           q-input(
             data-testid="derivationInput"
             data-cy="derivationInput"
             v-model="derivation"
-            placeholder="Derivation"
-            label="Derivation path"
+            :placeholder="$t('xpub.derivationPath')"
+            :label="$t('xpub.derivationPath')"
             :rules="[rules.required, rules.isValidDerivationPath]"
             outlined
           )
         .col
-          .text-body2 {{ $t('general.lorem')  }}
+          .text-body2 {{ $t('xpub.derivationPathDesc')  }}
     #scanQR(v-else)
       .row.q-col-gutter-x-md
         .col-7
@@ -67,15 +67,15 @@
                 data-testid="fullXpubInput"
                 data-cy="fullXpubInput"
                 v-model="fullXpub"
-                placeholder="Paste or write your XPUB"
-                label="XPUB"
+                :placeholder="$t('xpub.xpubPlaceholder')"
+                :label="$t('xpub.xpub')"
                 stack-label
                 outlined
                 :rules="[rules.required, rules.isValidFullXpub]"
             )
                 template(v-slot:append)
                     q-icon.icon-btn(data-testid="openQr" data-cy="openQr" name="qr_code_scanner" @click="toggleQRScanner(true)")
-                        q-tooltip Scan your XPUB
+                        q-tooltip {{ $t('xpub.xpubDesc') }}
         .col
           .text-body2 {{ $t('general.lorem')  }}
     q-btn.q-mt-sm(
