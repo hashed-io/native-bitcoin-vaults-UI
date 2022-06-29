@@ -192,7 +192,7 @@ export default {
       this.paramsParent = paramsParent
       this.cosigners = paramsParent.cosigners
       this.threshold = paramsParent.threshold
-      console.log('paramsParent', paramsParent)
+      // console.log('paramsParent', paramsParent)
       const proposal = JSON.parse(params.proposalParams)
       if (proposal && proposal.vaultId) {
         // this.proposal = proposal
@@ -281,7 +281,7 @@ export default {
       }
     },
     syncData (proposal) {
-      console.log('proposal syncData', proposal)
+      // console.log('proposal syncData', proposal)
       this.vaultId = proposal.vaultId
       this.proposalId = proposal.proposalId
       this.toAddress = proposal.toAddress
