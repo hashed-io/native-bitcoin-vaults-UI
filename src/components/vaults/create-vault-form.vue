@@ -75,7 +75,7 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm" ref="form")
               size="md"
               name="delete"
               color="negative"
-              @click="removeCosigner(cosigner.id)"
+              @click="includeOwnerAsCosigner = false"
               v-if="cosigners.length > 1"
             )
           .row.items-center(v-for="cosigner in cosigners")

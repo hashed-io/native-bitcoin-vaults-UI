@@ -1,5 +1,9 @@
 <template lang="pug">
 #container
+  //- Action Btn
+  q-page-sticky(position="bottom-right" :offset="[18, 18]")
+    q-btn(fab icon="refresh" color="secondary" @click="getVaults")
+      q-tooltip(self="bottom left" anchor="top left" :offset="[10, 10]") Refresh
   .row.justify-between.q-mb-md
     .text-h5 Manage Vaults
     q-btn(
