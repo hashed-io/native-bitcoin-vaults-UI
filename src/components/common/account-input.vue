@@ -8,6 +8,8 @@
         v-model="value"
         :outlined="outlined"
         :rules="rules"
+        :disable="disable"
+        :readonly="readonly"
     )
         template(v-slot:prepend)
             account-icon.q-mt-sm(:address="value" size="40px")
@@ -56,6 +58,20 @@ export default {
     rules: {
       type: Array,
       default: () => []
+    },
+    /**
+     * Disable input option
+     */
+    disable: {
+      type: Boolean,
+      default: false
+    },
+    /**
+     * Readonly input option
+     */
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['update:modelValue'],
