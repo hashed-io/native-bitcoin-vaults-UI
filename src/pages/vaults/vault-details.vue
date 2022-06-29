@@ -125,6 +125,7 @@ export default {
       vaultId: undefined,
       owner: undefined,
       description: undefined,
+      descriptors: undefined,
       changeDescriptor: undefined,
       outputDescriptor: undefined,
       offchainStatus: undefined,
@@ -191,18 +192,19 @@ export default {
       }
     },
     syncData (vault) {
-      console.log('syncData', vault)
+      // console.log('vault syncData', vault)
       this.vaultId = vault.vaultId
       this.owner = vault.owner
       this.description = vault?.description
       this.threshold = vault?.threshold
       this.cosigners = vault?.cosigners
+      this.descriptors = vault?.descriptors
       this.outputDescriptor = vault?.descriptors?.outputDescriptor
       this.changeDescriptor = vault?.descriptors?.changeDescriptor
       this.offchainStatus = vault?.offchainStatus
       this.handlerOffchainStatus(this.offchainStatus)
+      this.getProposals()
       if (this.vaultId && this.outputDescriptor) {
-        this.getProposals()
         this.getBalance()
       }
     },
@@ -317,6 +319,7 @@ export default {
         vaultId: this.vaultId,
         owner: this.owner,
         description: this.description,
+        descriptors: this.descriptors,
         threshold: this.threshold,
         cosigners: this.cosigners,
         outputDescriptor: this.outputDescriptor,

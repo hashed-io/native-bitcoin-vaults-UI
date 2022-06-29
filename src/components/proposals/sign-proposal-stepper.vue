@@ -8,29 +8,29 @@
   )
     q-step.minH(
       :name="steps.exportPsbt"
-      title="Export PSBT"
-      icon="settings"
+      :title="$t('proposals.titleStep1')"
+      icon="qr_code"
       :done="step > steps.exportPsbt"
     )
       .row
         .col-6
           psbt-qr-viewer(v-if="psbtQR" :qrs="psbtQR")
         .col
-          .text-body2.q-mt-md {{ $t('general.lorem') }}
+          .text-body2.q-mt-md {{ $t('proposals.signPsbtStep1') }}
     q-step.minH(
       :name="steps.importPsbt"
-      title="Import signed PSBT"
-      icon="settings"
+      :title="$t('proposals.titleStep2')"
+      icon="qr_code_scanner"
       :done="step > steps.importPsbt"
     )
       .row
         .col-7
           psbt-qr-scanner.q-pa-md(@onScanned="onPSBTScanned")
         .col
-          .text-body2.q-mt-md {{ $t('general.lorem') }}
+          .text-body2.q-mt-md {{ $t('proposals.signPsbtStep2') }}
     q-step.minH(
       :name="steps.finalize"
-      title="Finalize"
+      :title="$t('proposals.titleStep3')"
       icon="settings"
       :done="step > steps.finalize"
       :disable="!canShowLastStep"
@@ -40,7 +40,7 @@
             .row.items-center.q-col-gutter-sm.q-mb-md
                 .col-6
                     q-btn.full-width(
-                        label="Save PSBT"
+                        :label="$t('proposals.saveBtn')"
                         color="secondary"
                         no-caps
                         outline
@@ -49,12 +49,12 @@
                     )
                     q-tooltip(v-if="alreadySigned") You already signed
                 .col
-                    .text-body2 {{ $t('general.lorem') }}
+                    .text-body2 {{ $t('proposals.signPsbtSaveDesc') }}
         .col
             .row.items-center.q-col-gutter-sm.q-mb-md
                 .col-6
                     q-btn.full-width(
-                        label="Finalize PSBT"
+                        :label="$t('proposals.finalizeBtn')"
                         color="secondary"
                         no-caps
                         outline
@@ -63,12 +63,12 @@
                     )
                     q-tooltip(v-if="(isFinalized || isBroadcasted)") Already finalized
                 .col
-                    .text-body2 {{ $t('general.lorem') }}
+                    .text-body2 {{ $t('proposals.signPsbtFinalizeDesc') }}
         .col
             .row.items-center.q-col-gutter-sm.q-mb-md
                 .col-6
                     q-btn.full-width(
-                        label="Broadcast PSBT"
+                        :label="$t('proposals.broadcastBtn')"
                         color="secondary"
                         no-caps
                         outline
@@ -77,11 +77,11 @@
                     )
                     q-tooltip(v-if="isBroadcasted") Already broadcasted
                 .col
-                    .text-body2 {{ $t('general.lorem') }}
+                    .text-body2 {{ $t('proposals.signPsbtBroadcastDesc') }}
     template(v-slot:navigation)
       q-stepper-navigation
-        .row.justify-end
-            q-btn(v-if="step > 1" @click="$refs.stepper.previous()" flat color="primary" label="Back" class="q-ml-sm")
+        .row.justify-between
+            q-btn(:disabled="!(step > 1)" @click="$refs.stepper.previous()" flat color="primary" label="Back" class="q-ml-sm")
             q-btn(v-if="step !== steps.finalize" @click="$refs.stepper.next()" color="primary" :label="step === 3 ? 'Finish' : 'Continue'")
 </template>
 
