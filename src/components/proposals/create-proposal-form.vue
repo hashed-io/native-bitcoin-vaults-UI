@@ -18,7 +18,7 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
           :rules="[rules.required]"
         )
       .col
-        .text-body2 {{ $t('general.lorem')  }}
+        .text-body2 {{ $t('proposals.descriptionDesc')  }}
     .row.items-center.q-col-gutter-md.q-my-sm
       .col-7
         q-input(
@@ -29,7 +29,7 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
           :rules="[rules.required, rules.isValidMainetBTC]"
         )
       .col
-        .text-body2 {{ $t('general.lorem')  }}
+        .text-body2 {{ $t('proposals.recipientAddressDesc')  }}
     .row.items-center.q-col-gutter-md.q-my-sm
       .col-7
         q-input(
@@ -40,7 +40,7 @@ q-form.q-pa-xl.q-gutter-y-md(@submit="submitForm")
           :rules="[rules.required, rules.positiveInteger, rules.lessOrEqualThan(currentBalance || 0), rules.greaterOrEqualThan(546)]"
         )
       .col
-        .text-body2 {{ $t('general.loremShort')  }}
+        .text-body2 {{ $t('proposals.amountDesc')  }}
     q-btn.float-right.q-mb-md(
         data-testid="submitButton"
         label="Create Proposal"

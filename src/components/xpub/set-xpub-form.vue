@@ -77,7 +77,7 @@
                     q-icon.icon-btn(data-testid="openQr" data-cy="openQr" name="qr_code_scanner" @click="toggleQRScanner(true)")
                         q-tooltip {{ $t('xpub.xpubDesc') }}
         .col
-          .text-body2 {{ $t('general.lorem')  }}
+          .text-body2 {{ $t('general.xpubDesc')  }}
     q-btn.q-mt-sm(
       data-testid="submitButton"
       data-cy="submitButton"
