@@ -134,6 +134,7 @@ export default {
     },
     setXpub () {
       const XPUB = (!this.useForm) ? this.fullXpub : `[${this.masterFingerprint}${this.derivation.replace('m', '')}]${this.publicKey}`
+      console.log('setXpub', XPUB)
       this.$emit('onSubmitted', {
         // XPUB: this.fullXpub
         XPUB
