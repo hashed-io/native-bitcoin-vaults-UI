@@ -19,7 +19,7 @@
           @click="removeXpub"
         )
           q-tooltip Remove your XPUB
-  set-xpub-form(v-else :userAddress="selectedAccount.address" @submitted="setXpub")
+  set-xpub-form(v-else :userAddress="selectedAccount.address" @onSubmitted="setXpub")
 </template>
 
 <script>

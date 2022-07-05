@@ -159,5 +159,5 @@ export default defineComponent({
   background-color: white
 
 .hasLink
-  color: $light
+  color: $primary
 </style>
