@@ -18,7 +18,7 @@
     //-   outline
     //-   @click="signAndVerifyMessage"
     //- )
-  vault-list.q-my-md(:vaults="vaultList")
+  vault-list.q-my-md(:vaults="vaultList" @onVaultDetails="navigateToVaultDetails")
   #modals
     q-dialog(v-model="isShowingCreateVault")
       q-card.modalSize
@@ -111,6 +111,12 @@ export default {
       } finally {
         this.hideLoading()
       }
+    },
+    navigateToVaultDetails (vault) {
+      this.$router.push({
+        name: 'vaultDetails',
+        params: { vault: JSON.stringify(vault) }
+      })
     }
   }
 }

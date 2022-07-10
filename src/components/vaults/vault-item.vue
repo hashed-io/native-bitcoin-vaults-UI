@@ -85,22 +85,20 @@ export default {
       default: () => undefined
     }
   },
+  emits: ['onVaultDetails'],
   methods: {
     goToVaultDetails () {
       const vault = {
         vaultId: this.vaultId,
         cosigners: this.cosigners,
         description: this.description,
-        outputDescriptor: this.descriptors.outputDescriptor,
-        changeDescriptor: this.descriptors.changeDescriptor,
+        outputDescriptor: this.descriptors?.outputDescriptor,
+        changeDescriptor: this.descriptors?.changeDescriptor,
         owner: this.owner,
         threshold: this.threshold,
         offchainStatus: this.offchainStatus
       }
-      this.$router.push({
-        name: 'vaultDetails',
-        params: { vault: JSON.stringify(vault) }
-      })
+      this.$emit('onVaultDetails', vault)
     }
   }
 }

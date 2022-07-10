@@ -1,6 +1,6 @@
 <template lang="pug">
 #container.q-gutter-sm
-  vault-item.animated-item(v-for="vault in vaults" v-bind="vault")
+  vault-item.animated-item(v-for="vault in vaults" v-bind="vault" @onVaultDetails="onVaultDetails")
 </template>
 
 <script>
@@ -15,6 +15,12 @@ export default {
     vaults: {
       type: Array,
       default: () => []
+    }
+  },
+  emits: ['onVaultDetails'],
+  methods: {
+    onVaultDetails (vault) {
+      this.$emit('onVaultDetails', vault)
     }
   }
 }
