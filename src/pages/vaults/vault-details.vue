@@ -1,5 +1,11 @@
 <template lang="pug">
 #container
+  //- Error Banner
+  banner.q-mb-md(v-if="offchainMessage" v-bind="offchainMessage" )
+  //- Action Btn
+  q-page-sticky(position="bottom-right" :offset="[18, 18]")
+    q-btn(fab icon="refresh" color="secondary" @click="updateVault")
+      q-tooltip(self="bottom left" anchor="top left" :offset="[10, 10]") Refresh
   //- Header
   .row.justify-between.q-mb-md
     .text-h5 Vault Details
@@ -49,7 +55,7 @@
   q-card.q-pa-xs(v-if="outputDescriptor")
     q-item
       q-item-section.no-padding(v-if="vaultAddress")
-        .text-body2 {{ vaultAddress }}
+        q-item-label.text-body2(lines="1") {{ vaultAddress }}
       q-item-section.no-padding(avatar)
         q-btn(
           :label="!vaultAddress ? 'Get receive address' : 'Refresh receive address'"
@@ -88,7 +94,7 @@
   proposals-list(:proposals="proposalsList" @onProposalSelected="goToProposalDetails")
   #modals
     q-dialog(v-model="isShowingCreateProposal" persistent)
-      q-card.modalSize
+      q-card.modalSize.minH
         create-proposal-form(@submittedForm="createNewProposal" :currentBalance="balance")
     q-dialog(v-model="isShowingVaultQR")
       q-card.modalQrSize.q-pa-sm
@@ -106,19 +112,20 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { AccountItem } from '~/components/common'
+import { AccountItem, Banner } from '~/components/common'
 import CreateProposalForm from '~/components/proposals/create-proposal-form'
 import ProposalsList from '~/components/proposals/proposals-list'
 import { Encoder } from '@smontero/nbv-ur-codec'
 
 export default {
   name: 'VaultDetails',
-  components: { AccountItem, CreateProposalForm, ProposalsList },
+  components: { AccountItem, CreateProposalForm, ProposalsList, Banner },
   data () {
     return {
       vaultId: undefined,
       owner: undefined,
       description: undefined,
+      descriptors: undefined,
       changeDescriptor: undefined,
       outputDescriptor: undefined,
       offchainStatus: undefined,
@@ -130,6 +137,7 @@ export default {
       vaultQrText: undefined,
       vaultAddress: undefined,
       balance: undefined,
+      offchainMessage: undefined,
       proposalsList: []
     }
   },
@@ -137,6 +145,19 @@ export default {
     ...mapGetters('polkadotWallet', ['selectedAccount']),
     iAmOwner () {
       return this.selectedAccount.address === this.owner
+    },
+    isOffchainError () {
+      return !!(this.offchainMessage && this.offchainMessage.status === 'error')
+    },
+    validationMessage () {
+      if (this.offchainStatus) {
+        if (this.offchainStatus.status && this.offchainMessage.status === 'pending') {
+          return 'Pending'
+        } else if (this.offchainMessage.message) {
+          return this.offchainMessage.message
+        }
+      }
+      return undefined
     }
   },
   watch: {
@@ -151,21 +172,39 @@ export default {
     if (!params || !params.vault) this.$router.replace({ name: 'manageVaults' })
     const vault = JSON.parse(params.vault)
     if (!vault || !vault.owner || !vault.vaultId) this.$router.replace({ name: 'manageVaults' })
-    this.loadDetails(vault)
+    this.syncData(vault)
     // this.$route.meta.breadcrumb[1].name = 'Detailsss'
   },
   methods: {
-    async loadDetails (vault) {
+    async updateVault () {
+      try {
+        this.showLoading({ message: 'Updating proposal' })
+        const vault = await this.$store.$nbvStorageApi.getVaultsById({ Ids: [this.vaultId] })
+        this.syncData({
+          ...vault[0].toHuman(),
+          vaultId: this.vaultId
+        })
+      } catch (e) {
+        console.error('error', e)
+        this.showNotification({ message: e.message || e, color: 'negative' })
+      } finally {
+        this.hideLoading()
+      }
+    },
+    syncData (vault) {
+      // console.log('vault syncData', vault)
       this.vaultId = vault.vaultId
       this.owner = vault.owner
       this.description = vault?.description
       this.threshold = vault?.threshold
       this.cosigners = vault?.cosigners
-      this.outputDescriptor = vault?.outputDescriptor
-      this.changeDescriptor = vault?.changeDescriptor
+      this.descriptors = vault?.descriptors
+      this.outputDescriptor = vault?.descriptors?.outputDescriptor
+      this.changeDescriptor = vault?.descriptors?.changeDescriptor
       this.offchainStatus = vault?.offchainStatus
+      this.handlerOffchainStatus(this.offchainStatus)
+      this.getProposals()
       if (this.vaultId && this.outputDescriptor) {
-        this.getProposals()
         this.getBalance()
       }
     },
@@ -226,6 +265,7 @@ export default {
           descriptor: this.outputDescriptor
         })
         this.vaultAddress = data
+        this.copyTextToClipboard(data)
       } catch (e) {
         console.error('error', e)
         this.showNotification({ message: e.message || e, color: 'negative' })
@@ -279,6 +319,7 @@ export default {
         vaultId: this.vaultId,
         owner: this.owner,
         description: this.description,
+        descriptors: this.descriptors,
         threshold: this.threshold,
         cosigners: this.cosigners,
         outputDescriptor: this.outputDescriptor,
@@ -295,14 +336,19 @@ export default {
         }
       })
     },
-    copyTextToClipboard (data) {
-      try {
-        navigator.clipboard.writeText(data).then(e => {
-          this.showNotification({ message: 'Text copied to clipboard' })
-        })
-      } catch (e) {
-        console.error('error', e)
-        this.showNotification({ message: e.message || e, color: 'negative' })
+    handlerOffchainStatus (offchainStatus) {
+      if (offchainStatus.IrrecoverableError) {
+        this.offchainMessage = {
+          message: offchainStatus.IrrecoverableError,
+          status: 'error'
+        }
+      } else if (offchainStatus.toLowerCase() === 'pending') {
+        this.offchainMessage = {
+          message: 'Please await a moment, we are creating the descriptor',
+          status: 'loading'
+        }
+      } else if (offchainStatus.toLowerCase() === 'valid') {
+        this.offchainMessage = undefined
       }
     }
   }
@@ -313,4 +359,7 @@ export default {
 .qrContainer
   width: '200px'
   height : '200px'
+
+.minH
+ height: 700px !important
 </style>

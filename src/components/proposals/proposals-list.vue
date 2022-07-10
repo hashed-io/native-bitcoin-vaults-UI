@@ -2,7 +2,7 @@
 #container
   #empty(v-if="!proposals || proposals.length === 0")
     q-card.q-pa-md
-        .text-body2.text-center There are not proposals yet
+      .text-body2.text-center There are not proposals yet
   #list(v-if="proposals && proposals.length > 0")
     proposal-item.full-width.q-mt-md(v-for="proposal in proposals" v-bind="proposal" @proposalClicked="proposalClicked")
 </template>

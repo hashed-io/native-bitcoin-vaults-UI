@@ -92,6 +92,7 @@ export default {
         vaultId: this.vaultId,
         cosigners: this.cosigners,
         description: this.description,
+        descriptors: this.descriptors,
         outputDescriptor: this.descriptors?.outputDescriptor,
         changeDescriptor: this.descriptors?.changeDescriptor,
         owner: this.owner,
